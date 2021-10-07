@@ -76,7 +76,6 @@
 \usepackage{epsfig}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{subfig}
 \usepackage{multirow}
 \usepackage{float}
 \usepackage{amsthm}
@@ -90,6 +89,8 @@
 \usepackage{placeins}
 \usepackage[outputdir=latex.out]{minted}
 \usepackage{prettyref}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \renewcommand\listingscaption{Código}
 
@@ -144,13 +145,13 @@
 
 %Coordenador do curso no caso de TG
 \bosscoursegender{masc}
-\bosscourse{Prof.~Dr.}{Johnny Marques}
+\bosscourse{Prof.~Dr.}{Marcos Ricardo Omena De Albuquerque Maximo}
 
 % Palavras-Chaves informadas pela Biblioteca -> utilizada na CIP
 %\kwcip{Cupim}
 
 % Data da defesa (mês em maiúsculo, se trabalho em inglês, e minúsculo se trabalho em português)
-\date{25}{JUNE}{2021}
+\date{XX}{NOVEMBER}{2021}
 
 % Número CDU - (somente para TG)
 \cdu{XXX.XX}
@@ -165,22 +166,22 @@
 \mainmatter
 % Os capitulos comecam aqui
 
-\chapter{Introduction}
+\chapter{Introduction}\label{chap:introduction}
 \input{Capitulos/introduction}
 
-\chapter{Fundamentals of Re-hostinh}
+\chapter{Fundamentals of Re-hosting}\label{chap:fundamentals}
 \input{Capitulos/fundamentals}
 
-\chapter{Related Work}
+\chapter{Related Work}\label{chap:related}
 \input{Capitulos/related}
 
-\chapter{SCREEN}
+\chapter{SCREEN}\label{chap:screen}
 \input{Capitulos/screen}
 
-\chapter{Experiments \& Results}
+\chapter{Experiments \& Results}\label{chap:exp_and_results}
 \input{Capitulos/exp_and_results}
 
-\chapter{Conclusions}
+\chapter{Conclusions}\label{chap:conclusions}
 \input{Capitulos/conclusions}
 
 % \chapter{Future Work}
@@ -216,7 +217,9 @@
 
 % Folha de Registro do Documento
 % Valores dos campos do formulario
-\FRDitadata{25 de março de 2015}
+
+% [ ] - PREENCHER ISSO DIREITO ANTES DE ENVIAR PARA A BIBLIOTECA
+\FRDitadata{XX de novembro de 2021}
 \FRDitadocnro{DCTA/ITA/DM-018/2015} %(o número de registro você solicita a biblioteca)
 \FRDitaorgaointerno{Instituto Tecnológico de Aeronáutica -- ITA}
 %Exemplo no caso de pós-graduação: Instituto Tecnol{\'o}gico de Aeron{\'a}utica -- ITA
