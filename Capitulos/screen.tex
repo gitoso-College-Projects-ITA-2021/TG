@@ -21,7 +21,19 @@ The final module of the architecture is the exploitation module. In this stage, 
 
 For the firmware extraction process, our research is going to focus on enhancing the original script provided with Firmadyne \cite{firmadyne} for firmware extraction developed in Python and making extensive use of {\tt binwalk}'s API. This original script uses {\tt binwalk} to recursively extract the firmware image setting a limit for depth and breadth in order to limit this process as it is very slow. To speed up the extraction, the {\tt /tmp} directory of the host system (which is used to temporarily store files during the firmware extraction process) is going to be mounted on the {\tt tmpfs} provided by the Linux kernel and that allow us to mount a directory in the RAM instead of mounting it on the disk.
 
-Nonetheless, this method is potentially incapable of automatically extract some firmware images. Because not all firmware follows standard implementation, and frequently vendors obfuscate compression and file systems, we marked the failure subjects to posterior examination. Afterward, we inspect the marked ones to identify constraints and verify how to improve the automated image extraction. Then, subsequent modifying the extraction script, this entire process is repeated until satisfactory reach the maximum level in the extracted firmware images.
+This can be done per session, using the {\tt mount} command, or an entry can be added to the {\tt /etc/fstab} file of the Linux system. The entries found in {\tt /etc/fstab} will be automatically mounted during the system boot process. For instance, for manually mounting a directory named {\tt /home/firm/extractdir} with 16GB of size into the {\tt tmpfs} (RAM) for a single session, the following command may be used (requires elevated privileges to run):
+
+\begin{verbatim}
+mount -t tmpfs tmpfs /home/firm/extractdir -o size=16g
+\end{verbatim}
+
+For automatically mounting the same directory into the {\tt tmpfs} during the boot process, with a size of 16 GB, the following entry should be added to the {\tt /etc/fstab} file:
+
+\begin{verbatim}
+tmpfs   /home/firm/extractdir   tmpfs   rw,mode=1777,size=16g
+\end{verbatim}
+
+Nonetheless, this method of firmware extraction using the customized Firmadyne's \cite{firmadyne} extraction script is potentially incapable of automatically extract some firmware images. Because not all firmware follows standard implementation, and frequently vendors obfuscate compression and file systems, we marked the failure subjects to posterior examination. Afterward, we inspect the marked ones to identify constraints and verify how to improve the automated image extraction. Then, subsequent modifying the extraction script, this entire process is repeated until satisfactory reach the maximum level in the extracted firmware images.
 
 \section{Re-hosting Process}
 \label{sec:re-hosting}
