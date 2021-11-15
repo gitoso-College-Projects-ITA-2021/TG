@@ -6,7 +6,7 @@ Partial emulation, also known as ``hardware in the loop'', consists of emulating
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{figs/surrogates.png}
+    \includegraphics[width=0.7\textwidth]{figs/surrogates.png}
     \caption{FPGA gateway built to forward peripheral calls from the emulated system to the real device hardware. Developed as part of {\tt SURROGATES} solution \cite{surrogates}.}
     \label{fig:surrogates}
 \end{figure}
@@ -30,16 +30,26 @@ In the work of \cite{halucinator}, they develop the method called {\tt HALucinat
 
 On the other hand, the work of \cite{firmadyne} implements a tool called {\tt Firmadyne}, whose approach to re-hosting consists of replacing the original kernel found on the firmware image with a custom implemented and instrumented kernel worked by their team (the same kernel is used to all firmware images emulated, regardless their original kernel version) together with applying some fixes to the filesystem (e.g replacing default root password and creating some essential directories). This approach allows firmware emulation to be done at scale, with the counterpart that the kernel replacement sacrifices emulation fidelity (because of the change in the kernel, emulation fidelity in in userspace at most). The authors of {\tt Firmadyne} also implemented a web scraper capable of downloading firmware binary from popular vendors website and then used {\tt Firmadyne} to emulate and perform security analysis on the downloaded firmware images.
 
-Firmadyne architecture is very much aligned with the architecture we first idealized for our research, and thus this tool will set the basis of the work presented in this paper. More details about Firmadyne architecture will be given in Chapter \ref{chap:screen}.
+Firmadyne architecture, shown on Figure \ref{fig:firmadyne}, is very much aligned with the architecture we first idealized for our research, and thus this tool will set the basis of the work presented in this paper. More details about Firmadyne architecture will be given in Chapter \ref{chap:screen}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/firmadyne.png}
+    \caption{Firmadyne architecture~\cite{firmadyne}.}
+    \label{fig:firmadyne}
+\end{figure}
 
 \section{Symbolic Inference}
 
-A new approach to firmware emulation was proposed in the work of \cite{jetset}, in which the researchers hypothesize that the minimal behavior expected to boot a firmware to a point of interest by a security analyst could be inferred automatically. They then implemented a tool called {\tt Jetset} that extends the idea of symbolic execution to model the hardware peripherals calls answers until firmware reaches a target address (e.g. boot finished). Their solution takes as inputs the executable code of the target, the memory layout of the target, the entry point address for execution start and the goal address that the analyst desires the code to reach.
+A new approach to firmware emulation was proposed in the work of \cite{jetset}, in which the researchers hypothesize that the minimal behavior expected to boot a firmware to a point of interest by a security analyst could be inferred automatically. They then implemented a tool called Jetset that extends the idea of symbolic execution to model the hardware peripherals calls answers until firmware reaches a target address (e.g. boot finished). Their solution takes as inputs the executable code of the target, the memory layout of the target, the entry point address for execution start and the goal address that the analyst desires the code to reach.
 
-The authors of {\tt Jetset} then prove the capacities of their implemented tool by using it to perform the re-hosting of thirteen different pieces of firmware. The device in which {\tt Jetset} was applied that resembles the most similarities with wireless routers is the Raspberry Pi 2 (based on the Bradcom BCM2836 System-on-Chip [SoC] running on ARM architecture). For this device, the inputs needed for the proposed method to succeed are pieces of information extracted from the chip manufacturer documentation for the chip (datasheet). In terms of scalability, this is not ideal because one one need to gather information about the different SoC's of our targets, but the idea behind {\tt Jetset} is very powerful and is a solution worth exploring.
+The authors of Jetset then prove the capacities of their implemented tool by using it to perform the re-hosting of thirteen different pieces of firmware. The device in which Jetset was applied that resembles the most similarities with wireless routers is the Raspberry Pi 2 (based on the Bradcom BCM2836 System on a Chip [SoC] running on ARM architecture). For this device, the inputs needed for the proposed method to succeed are pieces of information extracted from the chip manufacturer documentation for the chip (datasheet). In terms of scalability, this is not ideal because one one need to gather information about the different SoC's of our targets, but the idea behind Jetset is very powerful and is a solution worth exploring.
 
 \section{Summary}
 
 % As we can see, many of the re-hosting techniques rely on non-scalable mechanisms. For example, Firmadyne provides an improvement to enable analysis at scale; however, it imposes limitations and remove much software running in kernel mode.  We present a proposal that differs from others by increasing the re-hosting coverage of operating systems in small and home-office systems (SOHO).  Our work provides a vision of operating systems to focus on, including a hardware architecture, version, and file systems.  Hence, identify dependencies in components (specific drivers) and maximize artifacts with favorable prominence (e.g., network stack).  As a result, it advances the state-of-the-art by bringing pieces of software left out of the emulation loop.
 
-As we can see, many of the re-hosting techniques rely on non-scalable mechanisms. For example, Firmadyne provides an improvement to enable analysis at scale; however, it imposes limitations and remove much software running in kernel mode.  We present a proposal that differs from others by increasing the re-hosting coverage of operating systems in small and home-office systems (SOHO).  Our work provides a vision of operating systems to focus on, including a hardware architecture, version, and file systems.  Hence, identify dependencies in components (specific drivers) and maximize artifacts with favorable prominence (e.g., network stack).  As a result, it advances the state-of-the-art by bringing pieces of software left out of the emulation loop.
+% ======== AQUI TEM MUDANÇA IMPORTANTE ========
+As we can see, many of the re-hosting techniques rely on non-scalable mechanisms. For example, Firmadyne provides an improvement to enable analysis at scale; however, it imposes limitations and remove much software running in kernel mode. As in our work we are targeting a specific class of firmware, in this case wireless routers running on SOHO systems, we propose to make an adjustment in the approaches used for firmware re-hosting to use information gathered from freely available firmware images on the internet and use these pieces of information to enumerate firmware images features and components. This enumeration can be used to highlight prominent targets for security inspection and also to enhance the approach used for re-hosting. For instance, the kernel replacement done by Firmadyne could be done with a kernel more similar to the original kernel found on the firmware. 
+
+In the next section, we will further discuss the approach that is going to be used in our research.

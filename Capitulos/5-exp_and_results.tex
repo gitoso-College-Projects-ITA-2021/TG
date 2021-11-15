@@ -40,12 +40,13 @@ Notebooks containing the code that was executed in order extract information fro
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{figs/jupyter.png}
+    \includegraphics[width=1.0\textwidth]{figs/jupyter.png}
     \caption{Jupyter Notebook interface (showing firmware enumeration notebook).}
     \label{fig:jupyter}
 \end{figure}
 
 \section{Firmware acquisition}
+\label{sec:firmware-aquisition}
 
 For the firmware acquisition, we used a fork of the Firmadyne's \cite{firmadyne} original scraper \cite{github:scraper}. This modified scraper version has fixed some compatibility issues the original scraper has with Python 3 and also updates the spiders to match more updated version of vendor websites. Without modifying any of the spiders provided by the scraper, we executed the scraper to automatically find and download firmware from all the possible vendors implemented by the scraper.
 
