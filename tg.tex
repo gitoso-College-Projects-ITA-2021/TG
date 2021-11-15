@@ -92,7 +92,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
-\renewcommand\listingscaption{Código}
+\renewcommand\listingscaption{Code}
 
 \newrefformat{anex}{Anexo~\ref{#1}}
 \newrefformat{cap}{Capítulo~\ref{#1}}
@@ -151,10 +151,10 @@
 %\kwcip{Cupim}
 
 % Data da defesa (mês em maiúsculo, se trabalho em inglês, e minúsculo se trabalho em português)
-\date{XX}{NOVEMBER}{2021}
+\date{18}{NOVEMBER}{2021}
 
 % Número CDU - (somente para TG)
-\cdu{XXX.XX}
+\cdu{681.3.064}
 
 % Glossario
 \makeglossary
@@ -167,25 +167,26 @@
 % Os capitulos comecam aqui
 
 \chapter{Introduction}\label{chap:introduction}
-\input{Capitulos/introduction}
+\input{Capitulos/1-introduction}
 
-\chapter{Fundamentals of Re-hosting}\label{chap:fundamentals}
-\input{Capitulos/fundamentals}
+\chapter{Fundamentals of Firmware Analysis and Re-hosting}\label{chap:fundamentals}
+\input{Capitulos/2-fundamentals}
 
 \chapter{Related Work}\label{chap:related}
-\input{Capitulos/related}
+\input{Capitulos/3-related}
 
 \chapter{SCREEN}\label{chap:screen}
-\input{Capitulos/screen}
+\input{Capitulos/4-screen}
 
 \chapter{Experiments \& Results}\label{chap:exp_and_results}
-\input{Capitulos/exp_and_results}
+\input{Capitulos/5-exp_and_results}
+
+% Virou parte da conclusão
+% \chapter{Future Work}\label{chap:future-work}
+% \input{Capitulos/future-work}
 
 \chapter{Conclusions}\label{chap:conclusions}
-\input{Capitulos/conclusions}
-
-% \chapter{Future Work}
-% \input{Capitulos/future-work}
+\input{Capitulos/6-conclusions}
 
 % \chapter{Introdução}
 % \input{Capitulos/cap1}
@@ -220,11 +221,11 @@
 
 % [ ] - PREENCHER ISSO DIREITO ANTES DE ENVIAR PARA A BIBLIOTECA
 \FRDitadata{XX de novembro de 2021}
-\FRDitadocnro{DCTA/ITA/DM-018/2015} %(o número de registro você solicita a biblioteca)
+\FRDitadocnro{DCTA/ITA/TC-056/2021} %(o número de registro você solicita a biblioteca)
 \FRDitaorgaointerno{Instituto Tecnológico de Aeronáutica -- ITA}
 %Exemplo no caso de pós-graduação: Instituto Tecnol{\'o}gico de Aeron{\'a}utica -- ITA
 \FRDitapalavrasautor{Firmware; Security; Cybersecurity; IoT; Embedded; Linux; Re-hosting; MIPS; ARM; Emulation.}
-\FRDitapalavrasresult{TODO}
+\FRDitapalavrasresult{Sistemas de computadores embarcados; Cibernética; Segurança de Computadores; Avaliação de ameaças; Computação}
 %Exemplo no caso de graduação (TG):
 %\FRDitapalavraapresentacao{Final Paper, ITA, São José dos Campos, 2021. \NumPenultimaPagina\ páginas.}
 \FRDitapalavraapresentacao{ITA, São José dos Campos. Curso de Graduação em Engenharia de Computação. Orientador: Prof. Dr. Lourenço Alves Pereira Jr. Publicado em 2021.}

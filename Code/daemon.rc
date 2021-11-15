@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ "${HTTPS}" = "yes" ]; then
+    /usr/sbin/mini_httpd -d /usr/www -c '/cgi-bin/*' -u root -S -E /etc/mini_httpd.pem -T utf-8
+else
+    /usr/sbin/mini_httpd -d /usr/www -c '/cgi-bin/*' -u root -T utf-8
+fi
+...

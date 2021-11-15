@@ -1,6 +1,6 @@
 In this chapter, we will present the architecture our research proposes in order to evaluate the large-scale re-hosting of router firmware images and the innovative aspects of the approach intended in this project. Hence, we define SCREEN: {\bf S}craper, {\bf C}lustering, {\bf RE}-hosting, and {\bf E}xploitatio{\bf N}.
 
-\section{Complete Architecture}
+\section{Complete Architecture (Idealized)}
 This paper represents only part of the solution idealized for a bigger research project, to be conducted throughout the years by a team of researchers. Figure \ref{fig:architecture} illustrates the overview of the SCREEN architecture for the complete project, whereas in this paper we will only focus on the re-hosting part (highlighted on the Figure) of the proposed architecture.
 
 \begin{figure}[h]
@@ -21,17 +21,22 @@ The final module of the architecture is the exploitation module. In this stage, 
 
 For the firmware extraction process, our research is going to focus on enhancing the original script provided with Firmadyne \cite{firmadyne} for firmware extraction developed in Python and making extensive use of {\tt binwalk}'s API. This original script uses {\tt binwalk} to recursively extract the firmware image setting a limit for depth and breadth in order to limit this process as it is very slow. To speed up the extraction, the {\tt /tmp} directory of the host system (which is used to temporarily store files during the firmware extraction process) is going to be mounted on the {\tt tmpfs} provided by the Linux kernel and that allow us to mount a directory in the RAM instead of mounting it on the disk.
 
-This can be done per session, using the {\tt mount} command, or an entry can be added to the {\tt /etc/fstab} file of the Linux system. The entries found in {\tt /etc/fstab} will be automatically mounted during the system boot process. For instance, for manually mounting a directory named {\tt /home/firm/extractdir} with 16GB of size into the {\tt tmpfs} (RAM) for a single session, the following command may be used (requires elevated privileges to run):
+This can be done per session, using the {\tt mount} command, or an entry can be added to the {\tt /etc/fstab} file of the Linux system. The entries found in {\tt /etc/fstab} will be automatically mounted during the system boot process. For instance, for manually mounting a directory named {\tt /home/firm/extractdir} with 16GB of size into the {\tt tmpfs} (RAM) for a single session, command show on Code \ref{code:tmpfs-manual} may be used (requires elevated privileges to run).
 
-\begin{verbatim}
-mount -t tmpfs tmpfs /home/firm/extractdir -o size=16g
-\end{verbatim}
+\begin{listing}[H]
+\inputminted[breaklines]{text}{Code/tmpfs-mount}
+\caption{Command line to mount a directory into the TMPFS (RAM memory). Must be executed with root privileges.}
+\label{code:tmpfs-manual}
+\end{listing}
 
-For automatically mounting the same directory into the {\tt tmpfs} during the boot process, with a size of 16 GB, the following entry should be added to the {\tt /etc/fstab} file:
+For automatically mounting the same directory into the {\tt tmpfs} during the boot process, with a size of 16 GB, the entry shown on Code \ref{code:tmpfs-fstab} should be added to the {\tt /etc/fstab} file:
 
-\begin{verbatim}
-tmpfs   /home/firm/extractdir   tmpfs   rw,mode=1777,size=16g
-\end{verbatim}
+\begin{listing}[H]
+\inputminted[breaklines]{text}{Code/tmpfs-fstab}
+\caption{Entry that need to be added to the {\tt /etc/fstab} file in order to automatically mount a directory into the TMPFS during the boot process.}
+\label{code:tmpfs-fstab}
+\end{listing}
+
 
 Nonetheless, this method of firmware extraction using the customized Firmadyne's \cite{firmadyne} extraction script is potentially incapable of automatically extract some firmware images. Because not all firmware follows standard implementation, and frequently vendors obfuscate compression and file systems, we marked the failure subjects to posterior examination. Afterward, we inspect the marked ones to identify constraints and verify how to improve the automated image extraction. Then, subsequent modifying the extraction script, this entire process is repeated until satisfactory reach the maximum level in the extracted firmware images.
 
