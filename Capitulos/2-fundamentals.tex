@@ -50,9 +50,9 @@ Nowadays, human specialists are still the main source of vulnerability discovery
         \begin{tabular}{|c|c|c|c|}
         \hline
         \textbf{Technique}   & \textbf{Initial Complexity} & \textbf{Accuracy} & \textbf{Scalability} \\ \hline
-        Static Analysis    & Easy      & Low   & Good         \\ \hline
-        Dynamic Analysis   & Hard      & High  & Uncertain    \\ \hline
-        Symbolic Execution & Hard      & High  & Bad          \\ \hline
+        Static Analysis    & Easy      & Low   & Good         \\ 
+        Dynamic Analysis   & Hard      & High  & Uncertain    \\ 
+        Symbolic Execution & Hard      & High  & Bad          \\ 
         Fuzzing            & Easy      & High  & Good         \\ \hline
         \end{tabular}%
     \label{tab:disc-techniques}
@@ -110,15 +110,14 @@ Binwalk \cite{github:binwalk} is a software with the purpose to identify and ext
 \begin{table}[h]
 \centering
 \caption{Example of file-type signatures (magic numbers).}
-\begin{tabular}{ccc}
+\resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|}
 \hline
 \textbf{Hexadecimal Value}                                 & \textbf{ASCII Representation}                & \textbf{File-Type}                   \\ \hline
-{\tt \footnotesize 89 50 4E 47 0D 0A 1A 0A}                & {\tt PNG}                     & Portable Network Graphics (PNG Image)\\ 
+{\tt \footnotesize 89 50 4E 47 0D 0A 1A 0A}                & {\tt PNG}                     & Portable Network Graphics (PNG Image)\\
 {\tt \footnotesize 4C 5A 49 50}                            & {\tt LZIP}                    & LZip Compressed File                 \\
 {\tt \footnotesize 7F 45 4C 46}                            & {\tt ELF}                     & Linux Executable File (ELF)          \\
-{\tt \footnotesize 25 50 44 46 2D}                         & {\tt \%PDF-}                  & PDF Document                         \\ 
-\hline
-\end{tabular}
+{\tt \footnotesize 25 50 44 46 2D}                         & {\tt \%PDF-}                  & PDF Document                         \\ \hline
+\end{tabular}}
 \label{tab:magic-numbers}
 \end{table}
 

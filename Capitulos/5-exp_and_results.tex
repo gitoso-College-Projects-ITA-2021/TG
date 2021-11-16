@@ -1,15 +1,15 @@
-In this chapter, we will discuss the obtained results in the process of firmware acquisition and firmware extraction, previous steps before the actual firmware re-hosting.
+In this chapter we will describe the work that has been done to perform the firmware acquisition, extraction and enumeration together with the statistics that we were able extract from the results obtained. We will also describe the results we had when investigating and experimenting with kernel compilation and firmware emulation using both a manual approach and an automated approach via Firmadyne~\cite{firmadyne}.
 
 \section{Work Environment}
 
-Before discussing our results, this section will explain how our team has set up our software work environment. A personal computer was configured with a virtualization solution called Proxmox Virtual Environment as operating system. Proxmox VE is a Linux operating system (based on Debian distribution) that act as a virtualization server. It provides an web interface in which the user can create and manage virtual machines. Proxmox VE uses the already mentioned QEMU \cite{qemu} (mentioned in Sections \ref{sec:re-hosting} and \ref{sec:qemu}) and the Linux KVM (Kernel Virtual Machine) technology as a backend, and provides a hypervisor for managing containers and virtual machines.
+Before discussing our results, this section will explain how our team has set up our software work environment. A personal computer was designated to work as a server. This server was then configured with a virtualization solution called Proxmox Virtual Environment\footnote{\url{https://www.proxmox.com/en/proxmox-ve}} as it's operating system. Proxmox VE is a Linux operating system (based on the Debian distribution) that act as a virtualization server. It provides an web interface in which the user can create and manage virtual machines. Proxmox VE uses the already mentioned QEMU \cite{qemu} (mentioned in Sections \ref{sec:re-hosting} and \ref{sec:qemu}) and the Linux KVM technology as a backend, and provides a hypervisor for managing containers and virtual machines.
 
-This setup allows us to easily create virtual machines to test software in an environment of isolation, save virtual machines disk snapshots and rollback in time if needed. A main guest virtual machine with Debian 10 was selected to host our main efforts. Table \ref{tab:vm-specs} shows the specifications of the machines (host and virtual machine) used as our main work environment. The access to the machines was done using the SSH protocol.
+This setup allows us to easily create virtual machines to test software in an environment of isolation, save virtual machines disk snapshots and rollback in time if needed. A main guest virtual machine with Debian 10 was selected to host our main efforts. Table \ref{tab:vm-specs} shows the specifications of the machines (host and virtual machine) used as our main work environment. The access to the machines was done using the Secure Shell (SSH) protocol.
 
 \begin{table}[H]
 \centering
 \caption{Specifications for the host machine and main virtual machine used in our project.}
-\begin{tabular}{ccc}
+\begin{tabular}{|c|c|c|}
 \hline
 \textbf{Specifications} & \textbf{Host} & \textbf{Guest VM} \\ \hline
 Operating System        & Proxmox VE           & Debian 10             \\
@@ -22,21 +22,21 @@ Memory                  & 32 GB                & 20 GB                 \\ \hline
 \label{tab:vm-specs}
 \end{table}
 
-Furthermore, to enhance the experience when working connected to a remote machine using the SSH protocol, some tools were extensively used in our work. Just for the record, we will list here some of the utilities we used as this can help other people that work in similar environment, in which remote work via SSH protocol is a common practice.
+Furthermore, to enhance the experience when working connected to a remote machine using the SSH protocol, some tools were extensively used in our work. Just for the record, we will list here some of the utilities we used as this can help other people that work in similar environment, in which remote work via SSH protocol is a routine.
 
 \begin{itemize}
-    \item \textbf{Tmux}: Utility to save SSH sessions. Using Tmux one can create a session inside the remote server. Sessions can be attached and detached, in a way that a person can leave processes running in a remote machine and end close the terminal running the SSH client, in a way that the running process will keep running in the remote machine. Afterwards, the user can simply join the remote Tmux session again and he will be reattached to the running processes he left in the session.
+    \item \textbf{Tmux}: Utility to save SSH sessions. Using Tmux one can create a session inside the remote server. Sessions can be attached and detached, in a way that a person can leave processes running in a remote machine and then close the terminal running the SSH client, in a way that the running process will keep running inside the remote machine. Afterwards, the user can simply join the remote Tmux session again and he will be reattached to the running processes he left in the previous session.
     
-    \item {\tt ngrok}: This tool provides a way to easily open network tunnels to expose a service on the internet without requiring the user to forward ports to expose services in it's local network. The user can choose which protocol and port {\tt ngrok} will expose to the internet, and the tool will provide a URL that forwards internet connection to the local service the user has exposed. A daemon running {\tt ngrok} was configured in our guest VM allowing us to work on our server anywhere on the internet (outside our local network).
+    \item {\tt ngrok}: This tool provides a way to easily open network tunnels to expose a service on the internet without requiring the user to forward ports in the network router to expose services in it's local network. The user can choose which protocol and port {\tt ngrok} will expose to the internet, and the tool will provide a Uniform Resource Locator (URL) that forwards internet connection to the local service the user has exposed. A daemon running {\tt ngrok} was configured in our guest Virtual Machine (VM) allowing us to work on our server anywhere on the internet (outside our local area network [LAN]).
 \end{itemize}
 
-It's also worth mentioning that we also used the PostgreSQL database to save interesting data. Interaction with the database was done using the {\tt psql} command line tool.
+It's also worth mentioning that we also used the PostgreSQL database to save interesting data. Interaction with the database was done using the {\tt psql} command line tool. PostgreSQL was already a requirement for the Firmadyne~\cite{firmadyne} tool. Hence, we decided to alter the schema that was already being used to add more columns in order to hold data we decided to gather from the firwmare images.
 
 \section{Jupyter Notebooks}
 
-In order to organize work, specially as we intend to collaborate as a team and also to collaborate with external researchers, during our experiments, we felt the need to have a tool to help us record the experiments and to save the acquired information during the experimentation phase. Therefore, we decided a good fit for this need was to use Jupyter Notebooks as a way to report experiments and results. Jupyter Notebooks are a way to save documents containing formatted text (in markdown language) with snippets of code (in Python or shell scripts) and its respectively outputs.
+In order to organize work, specially as we intend to collaborate both as a team and also with external researchers, during our experiments, we felt the need to have a tool to help us record the experiments and to save the acquired information during the experimentation phase. Therefore, we decided a good fit for this need was to use Jupyter Notebooks as a way to report experiments and results. Jupyter Notebooks are a way to save documents containing formatted text (in Markdown language) with snippets of code (in Python or shell scripts) and its respectively outputs.
 
-Notebooks containing the code that was executed in order extract information from the firmware images and to produce the results shown on this paper can be found on this project repository \cite{github:c2dc-toso} together with the output produced by their execution. Figure \ref{fig:jupyter} shows the interface of one of the implemented Jupyter notebooks.
+Notebooks containing the code that was executed in order to extract information from the firmware images and to produce the results shown on this paper can be found on this project repository \cite{github:c2dc-toso} together with the output produced by their execution. Figure \ref{fig:jupyter} shows the interface of one of the implemented Jupyter notebooks.
 
 \begin{figure}[H]
     \centering
@@ -48,57 +48,66 @@ Notebooks containing the code that was executed in order extract information fro
 \section{Firmware acquisition}
 \label{sec:firmware-aquisition}
 
-For the firmware acquisition, we used a fork of the Firmadyne's \cite{firmadyne} original scraper \cite{github:scraper}. This modified scraper version has fixed some compatibility issues the original scraper has with Python 3 and also updates the spiders to match more updated version of vendor websites. Without modifying any of the spiders provided by the scraper, we executed the scraper to automatically find and download firmware from all the possible vendors implemented by the scraper.
+For the firmware acquisition, we used a fork of the Firmadyne's \cite{firmadyne} original scraper \cite{github:scraper}. This modified scraper version has fixed some compatibility issues the original scraper has with Python 3 and also updates the spiders to match more updated version of vendors websites. Without modifying any of the spiders provided by the scraper, we executed it to automatically find and download firmware from all the possible vendors implemented, which by default means 11 wireless router firmware manufacturers and 3 open source firmware projects (OpenWrt, Tomato and pfSense).
 
-As the project is part of a team research, and to facilitate the research setup between different machines, we also implemented a script to automate the execution of the scraper and to enumerate the scraped firmware images for each vendor.
+As the project is part of a team research, and to facilitate the research setup between different machines, we also implemented a script to automate the execution of the scraper and to enumerate the scraped firmware images for each vendor. This implemented automation proved useful when we wanted to setup a new machine to work in our project.
 
 In total, 9176 firmware images were downloaded throughout this process. Table \ref{tab:scraper} show the amount of firmware images and its combined file size for each vendor.
 
 \begin{table}[H]
 \centering
-\caption{Downloaded firmware images per vendor.}
-\begin{tabular}{ccc}
+\caption{Downloaded firmware images per vendor. Vendors marked with $^*$ refer to open source projects.}
+\begin{tabular}{|c|c|c|}
 \hline
 \textbf{Vendor} & \textbf{Firmware Images} & \textbf{Combined File Size} \\ \hline
-OpenWrt         & 3898                     & 15 GB                       \\ 
+OpenWrt$^*$     & 3898                     & 15 GB                       \\ 
 Netgear         & 1544                     & 48 GB                       \\ 
 MikroTik        & 873                      & 11 GB                       \\ 
 TP-Link         & 788                      & 7.2 GB                      \\ 
 D-Link          & 591                      & 8.8 GB                      \\ 
 Polycom         & 547                      & 136 GB                      \\ 
-Tomato (Shibby) & 321                      & 2.3 GB                      \\ 
+Tomato (Shibby)$^*$ & 321                      & 2.3 GB                      \\ 
 QNAP            & 279                      & 43 GB                       \\ 
 Tenda           & 176                      & 825 MB                      \\ 
 Ubiquiti        & 78                       & 2.3 GB                      \\ 
 Belkin          & 36                       & 267 M                       \\ 
 Mercury         & 33                       & 25 MB                       \\ 
-pfSense         & 6                        & 2.2 GB                      \\ 
+pfSense$^*$     & 6                        & 2.2 GB                      \\ 
 Buffalo         & 6                        & 75 MB                       \\ \hline
 
 \end{tabular}
 \label{tab:scraper}
 \end{table}
 
-Note that the scraper also download firmware images from the OpenWrt project, which aims to develop a highly extensible GNU/Linux distribution suited for embedded devices (specially wireless routers). Because OpenWrt is not really a wireless router manufacturer, in the next statistics regarding the firmware images, the OpenWrt will be considered apart.
+% Note that the scraper also download firmware images from the OpenWrt project, which aims to develop a highly extensible GNU/Linux distribution suited for embedded devices (specially wireless routers). Because OpenWrt is not really a wireless router manufacturer, in the next statistics regarding the firmware images, the OpenWrt will be considered apart.
 
-As the goal of this work is towards the process of re-hosting, this amount of firmware images is already enough for initial experiments with automated re-hosting. In further work, more vendors pages can be extracted, and we can update scraper's spiders if we judge there is need for a larger volume of firmware images. Also, just for the record, one of our contributors has already implemented a spider to acquire firmware from a vendor that is not contemplated on the original scraper list (ASUS), but this implemented spider was posterior to our data acquisition and thus it was not used for the results in this paper.
+Note that the scraper also download firmware images from some open source firmware projects, such as the OpenWrt project, which aims to develop a highly extensible GNU/Linux distribution suited for embedded devices (specially wireless routers). Because these open source projects are not really wireless router manufacturers, in the next statistics regarding the firmware images, statistics with and without these projects will be given.
+
+As the goal of this work is towards the process of re-hosting, this amount of firmware images is already enough for initial experiments with automated re-hosting. In further work, more vendors pages can be crawled, and we can update scraper's spiders if we judge there is need for a larger volume of firmware images. Also, just for the record, one of our contributors has already implemented a spider to acquire firmware from a vendor that is not contemplated on the original scraper list (firmware from the ASUS manufacturer), but this implemented spider was posterior to our data acquisition and thus it was not used for the results in this paper.
 
 \section{Firmadyne Automation}
 
-Although Firmadyne~\cite{firmadyne} has already implemented code to perform firmware acquisition (with the scraper), extraction and re-hosting, there is no code that integrates and automated these actions - at least in the code provided by Firmadyne's repository. In this sense, we implemented a lot of shell scripts to automate the execution of Firmadyne's atomic actions. More than that, in our Jupyter notebooks, we show code to automate steps from Firmadyne execution and to programmatically extract important data and statistics from the firmware directory and Firmadyne's original database.
+Although Firmadyne~\cite{firmadyne} has already implemented code to perform firmware acquisition (with the scraper), extraction and re-hosting, there is no code that integrates and automated these actions - at least in the code provided by Firmadyne's public GitHub repository\footnote{\url{https://github.com/firmadyne/firmadyne}}. In this sense, we implemented a lot of shell scripts to automate the execution of Firmadyne's atomic actions. More than that, in our Jupyter notebooks, we show code to automate steps from Firmadyne execution and to programmatically extract important data and statistics from the firmware directory and Firmadyne's original database.
 
-Also, to better understand the tool, there was a lot of reverse engineering and 
+Also, as Firmadyne is only the product of a research project, and not a commercial software or community backed open source project, there is not extensive documentation around the tool, so to better understand what the software is doing and to learn how to use it properly, there was a lot of ``reverse engineering'' (code reading and following the execution flow) involved in this process. Actually, some parts of the original code was even adapted to better suit our needs.
 
 \section{Firmware extraction}
 \label{sec:firmware-extraction}
 
-Firmware extraction was heavily based on the usage of the {\tt binwalk} tool, whose usage was wrapped inside a script provided by Firmadyne \cite{firmadyne}. This script, when executed with a firmware image as a parameter, recursively tries to extract files using {\tt binwalk} for this purpose. It defines a breadth and depth limit to this recursion strategy. During the extraction process, the script then tries to identify if any of the extracted directories has a Linux root directory structure (i.e. has {\tt /bin}, {\tt /etc}, {\tt /usr} directories and so on). If that is the case, then this filesystem structure is compressed and stored in a separate location (also defined as a parameter to the script). 21.48\% of the total amount of firmware files (1971 from 9176 images) were successfully extracted by Firmadyne's \cite{firmadyne} extraction script. Of these extracted images, 97.21\% (1916 images) had the root filesystem extracted and of these, 94.89\% (1818 images) had the architecture identified. Architecture identification is done by reading files in filesystem directories that should contain binary files (e.g. {\tt /bin} or {\tt /sbin}) and reading the header of these files.
+Firmware extraction was heavily based on the usage of the {\tt binwalk} tool, whose usage was wrapped inside a script provided by Firmadyne \cite{firmadyne}. This script, when executed with a firmware image as a parameter, recursively tries to extract files using {\tt binwalk} for this purpose. It defines a breadth and depth limit to this recursion strategy. During the extraction process, the script then tries to identify if any of the extracted directories has a Linux root directory structure (i.e. has {\tt /bin}, {\tt /etc}, {\tt /usr} directories and so on). If that is the case, then this filesystem structure is compressed and stored in a separate location (also defined as a parameter to the script). 21.48\% of the total amount of firmware files (1971 from 9176 images) were successfully extracted by Firmadyne's \cite{firmadyne} extraction script. Of these extracted images, 97.21\% (1916 images) had the root filesystem extracted and of these, 94.89\% (1818 images) had the architecture identified. Architecture identification is done by reading files in filesystem directories that should contain binary files (e.g. {\tt /bin} or {\tt /sbin}) and reading the header of these files (and comparing with the binary header expected for an executable file in any architecture).
 
 Kernel detection is done by reading each entry identified by {\tt binwalk} in the extraction process and detecting known kernel types. These are also extracted and stored in a separate location. When using the script, the user has the option to disable kernel extraction, as this greatly improves execution speed since {\tt binwalk} spends a lot of effort in the extraction process. If kernel extraction is not disabled by user, then the script also tries to identify kernel version and store this information in Firmadyne's \cite{firmadyne} database if found.
 
-When extracting firmware, if Firmadyne's extraction script is capable of identifying the original firmware filesystem, its structure (only the names of each files) is saved into a database, associating the files with the firmware id. After that the original filesystem (with files contents) is compressed and saved in an output folder. Therefore, it is easy to search for files inside the extracted firmware images as one can easily query the database to search for an specific filename. If the content of a file is desired, the associated compressed filesystem can be extracted to recover the desired file content.
+When extracting firmware, if Firmadyne's extraction script is capable of identifying the original firmware filesystem, its structure (only the names of each files) is saved into a database, associating each of the filenames with the firmware image identification number (image ID). After that the original filesystem (with files contents) is compressed and saved in an output folder. Therefore, it is easy to search for files inside the extracted firmware images as one can easily query the database to search for an specific filename. If the content of a file is desired, the associated compressed filesystem can be extracted to recover the desired file content. Figure \ref{fig:sql-schema} illustrates with few columns how the database is structured (only part of the schema and the data is shown on the image). The {\tt object\_to\_image} table from the database can be queried to search for specific files inside the compressed filesystem of the firmware images.
 
-As not all kernels are identified by the {\tt binwalk} tool during the extraction phase, we also developed an heuristic that uses regular expressions to search the extracted filesystem of each firmware image (querying the database) whose kernel was not identified during extraction and try to find directories that could reveal kernel version (e.g. {\tt /lib/modules/2.6.31} is an indicative that this image contains a 2.6.31 Linux kernel). This search is extremely fast compared to the filesystem extraction process and increased the number of kernel versions detected. Initially, with the Firmadyne's \cite{firmadyne} original extraction script, only 374 kernels were identified amongst the 1971 (18.98\%) of the total amount of firmware images. After running the described heuristics to determine kernel version from filesystem, the number of identified kernels increased to 1812 (384.49\% greater).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0 \textwidth]{figs/SQL_Schema.pdf}
+    \caption{Part of the database structure showing the relation between some tables. Note that the whole database contain more tables, columns and data.}
+    \label{fig:sql-schema}
+\end{figure}
+
+As not all kernels are identified by the {\tt binwalk} tool during the extraction phase, we also developed a heuristic that uses regular expressions to search the extracted filesystem of each firmware image (querying the database) whose kernel was not identified during extraction and try to find directories that could reveal kernel version (e.g. {\tt /lib/modules/2.6.31} is an indicative that this image contains a 2.6.31 Linux kernel). This search is extremely fast compared to the filesystem extraction process and increased the number of kernel versions detected. Initially, with the Firmadyne's \cite{firmadyne} original extraction script, only 374 kernels were identified amongst the 1971 (18.98\%) of the total amount of firmware images. After running the described heuristics to determine kernel version from filesystem, the number of identified kernels increased to 1812 (384.49\% greater).
 
 When considering only the firmware files with root filesystem extracted and architecture identified, 97.85\% (1779 images) had the kernel identified. That is, 1779 firmware images of our dataset had it's complete tuple identification: Architecture, Kernel Version and Root Filesystem. Figure \ref{fig:stats-funnel} shows the funnel of success for firmware extraction and illustrates the statistics just described.
 
@@ -110,9 +119,9 @@ When considering only the firmware files with root filesystem extracted and arch
 \end{figure}
 
 
-It was also identified two issues in the extraction process. Some kernel image media types (formerly known as MIME types) were incorrectly identified as a type that was on the extraction script blacklist. This could be easily corrected excluding the identified type from the blacklist. The second issue is related to the recursive extraction process. The limits in breadth and depth exploration allow the {\tt binwalk} tool to have usable performance, but in some cases these limits were in fact responsible for the firmware extraction to be unsuccessful. Therefore, we believe using an heuristic to select files with the most potential to hold firmware kernel or filesystem to be extracted next. This way we can still have breadth and depth limits to maintain the extraction process feasible but it would also focus the extraction in files that are more prominent. This approach of using an heuristics although idealized was not yet implemented in our work.
+It was also identified two issues in the extraction process. Some kernel image media types (also known as Multipurpose Internet Mail Extension [MIME] types) were incorrectly identified as a type that was on the extraction script blacklist. This could be easily corrected excluding the identified type from the blacklist. The second issue is related to the recursive extraction process. The limits in breadth and depth exploration allow the {\tt binwalk} tool to have usable performance, but in some cases these limits were in fact responsible for the firmware extraction to be unsuccessful. Therefore, we believe using an heuristic to select files with the most potential to hold firmware kernel or filesystem to be extracted next. This way we can still have breadth and depth limits to maintain the extraction process feasible but it would also focus the extraction in files that are more prominent. This approach of using an heuristics although idealized was not yet implemented in our work.
 
-Another enhancement we developed to the extraction process was the ability to extract addition kernel information. During kernel extraction, the kernel binary file is scanned for ASCII strings and from the result of this search we then extract kernel banner (a string containing kernel version, compiler version used during kernel compilation, compilation date and email of the developer who compiled the kernel) or identify for instance if the system being extracted refers to an OpenWrt Linux. These additional pieces of information are also stored in Firmadyne's \cite{firmadyne} database, that had its schema altered to contain a new column to store the extra information for a given firmware image.
+Another enhancement we developed to the extraction process was the ability to extract addition kernel information. During kernel extraction, the kernel binary file is scanned for American Standard Code for Information Interchange (ASCII) strings and from the result of this search we then extract kernel banner (a string containing kernel version, compiler version used during kernel compilation, compilation date and email of the developer who compiled the kernel) or identify for instance if the system being extracted refers to an OpenWrt Linux (even if the firmware manufacturer is not OpenWrt). These additional pieces of information are also stored in Firmadyne's \cite{firmadyne} database, that had its schema altered to contain a new column to store the extra information for a given firmware image.
 
 % Falar das estatísticas; Colocar tabela com as estatísticas
 
@@ -125,7 +134,7 @@ The decision to include statistics with and without the aforementioned vendors f
 \begin{table}[H]
 \centering
 \caption{Number of images identified for each found architecture without considering OpenWrt, Tomato and pfSense firmware images.}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Architecture}       & \textbf{Quantity of Images} \\ \hline
 {\tt mipseb}                &  300                        \\ 
@@ -142,13 +151,13 @@ The decision to include statistics with and without the aforementioned vendors f
 \begin{table}[H]
 \centering
 \caption{Five most common kernel versions found in extracted firmware images without considering OpenWrt, Tomato and pfSense firmware images.}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Kernel Version} & \textbf{Quantity of Images} \\ \hline
-3.3.5                  & 546                 \\
-2.6.36                 &  59                 \\
-2.6.31                 &  52                 \\
-2.6.22                 &  48                 \\
+3.3.5                  & 546                 \\ 
+2.6.36                 &  59                 \\ 
+2.6.31                 &  52                 \\ 
+2.6.22                 &  48                 \\ 
 3.3.8                  &  27                 \\ \hline
 \end{tabular}
 \label{tab:kernel-stats}
@@ -157,13 +166,13 @@ The decision to include statistics with and without the aforementioned vendors f
 \begin{table}[H]
 \centering
 \caption{Five most common kernel families found in extracted firmware images without considering OpenWrt, Tomato and pfSense firmware images.}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
-3.3                     & 573                \\ 
-2.6                     & 223                \\ 
-3.10                    &  32                \\ 
-3.14                    &  28                \\ 
+3.3                     & 573                \\
+2.6                     & 223                \\
+3.10                    &  32                \\
+3.14                    &  28                \\
 3.6                     &  22                \\ \hline
 \end{tabular}
 \label{tab:kernel-family-stats}
@@ -174,15 +183,15 @@ The decision to include statistics with and without the aforementioned vendors f
 \begin{table}[H]
 \centering
 \caption{Number of images identified for each found architecture (also considering OpenWrt, Tomato and pfSense firmware images).}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Architecture}       & \textbf{Quantity of Images} \\ \hline
-{\tt mipseb}                & 688                         \\ 
-{\tt mipsel}                & 660                         \\ 
-{\tt armel}                 & 303                         \\ 
-{\tt ppceb}                 & 90                          \\ 
-{\tt intelel}               & 69                          \\ 
-{\tt intel64el}             & 4                           \\ 
+{\tt mipseb}                & 688                         \\
+{\tt mipsel}                & 660                         \\
+{\tt armel}                 & 303                         \\
+{\tt ppceb}                 & 90                          \\
+{\tt intelel}               & 69                          \\
+{\tt intel64el}             & 4                           \\
 {\tt mips64eb}              & 4                           \\ \hline
 \end{tabular}
 \label{tab:arch-stats-openwrt}
@@ -191,7 +200,7 @@ The decision to include statistics with and without the aforementioned vendors f
 \begin{table}[H]
 \centering
 \caption{Five most common kernel versions found in extracted firmware images (also considering OpenWrt, Tomato and pfSense firmware images).}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Kernel Version} & \textbf{Quantity of Images} \\ \hline
 5.4.14                  & 619                \\
@@ -206,7 +215,7 @@ The decision to include statistics with and without the aforementioned vendors f
 \begin{table}[H]
 \centering
 \caption{Five most common kernel families found in extracted firmware images (also considering OpenWrt, Tomato and pfSense firmware images).}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 5.4                    & 658                \\ 
@@ -223,10 +232,10 @@ As the kernel version for a specific product is a manufacturer decision, the pre
 \begin{table}[H]
 \centering
 \caption{Five most common kernel versions found in extracted firmware images by vendor.}
-\resizebox{0.75\textwidth}{!}{\begin{tabular}{cccccc}
+\resizebox{0.75\textwidth}{!}{\begin{tabular}{|c|c|c|c|c|c|}
 \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: OpenWrt} (670 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: OpenWrt} (670 kernels)}                                                                     \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images}  \\ \hline
 {\tt mipseb}            & \multicolumn{1}{c|}{295}             & 5.4.15                 & \multicolumn{1}{c|}{619}                           & 5.4                    & 659                         \\
 {\tt mipsel}            & \multicolumn{1}{c|}{282}             & 5.4.15                  & \multicolumn{1}{c|}{34}                           & 5.10                    & 11                         \\
@@ -234,7 +243,7 @@ As the kernel version for a specific product is a manufacturer decision, the pre
 {\tt ppceb}             & \multicolumn{1}{c|}{6}               & 5.4.87                  & \multicolumn{1}{c|}{5}                            &                         &                            \\
                         & \multicolumn{1}{c|}{}                & 4.14.12                 & \multicolumn{1}{c|}{1}                            &                         &                            \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: MikroTik} (546 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: MikroTik} (546 kernels)}                                                                    \\ \hline
 \textbf{Architecture}  &  \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipseb}            & \multicolumn{1}{c|}{157}                & 3.3.5                  & \multicolumn{1}{c|}{546}                           & 3.3                     & 546                       \\
 {\tt armel}             & \multicolumn{1}{c|}{86}                 &                        & \multicolumn{1}{c|}{}                              &                         &                           \\
@@ -242,14 +251,14 @@ As the kernel version for a specific product is a manufacturer decision, the pre
 {\tt mipsel}            & \multicolumn{1}{c|}{73}                 &                        & \multicolumn{1}{c|}{}                              &                         &                           \\ 
 {\tt intelel}           & \multicolumn{1}{c|}{68}                 &                        & \multicolumn{1}{c|}{}                              &                         &                           \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: Tomato (Shibby)} (202 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: Tomato (Shibby)} (202 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipsel}            & \multicolumn{1}{c|}{170}               & 2.6.22                  & \multicolumn{1}{c|}{159}                         & 2.6                     & 179                        \\
 {\tt armel}             & \multicolumn{1}{c|}{19}                & 2.6.36                  & \multicolumn{1}{c|}{20}                          & 2.4                     & 23                         \\
                         & \multicolumn{1}{c|}{}                  & 2.4.37                  & \multicolumn{1}{c|}{12}                          &                         &                            \\
                         & \multicolumn{1}{c|}{}                  & 2.4.20                  & \multicolumn{1}{c|}{11}                          &                         &                            \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: TP-Link} (110 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: TP-Link} (110 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipseb}            & \multicolumn{1}{c|}{59}                & 2.6.36                  & \multicolumn{1}{c|}{35}                          & 2.6                     & 80                         \\
 {\tt mipsel}            & \multicolumn{1}{c|}{23}                & 2.6.31                  & \multicolumn{1}{c|}{34}                          & 3.3                     & 17                         \\
@@ -257,7 +266,7 @@ As the kernel version for a specific product is a manufacturer decision, the pre
 {\tt mips64eb}          & \multicolumn{1}{c|}{2}                 & 2.6.15                  & \multicolumn{1}{c|}{5}                           & 3.4                     & 2                          \\
 {\tt ppceb}             & \multicolumn{1}{c|}{2}                 & 3.10.14                 & \multicolumn{1}{c|}{3}                           & 3.14                    & 2                          \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: Netgear} (101 kernels)}                                                                        \\
+\multicolumn{6}{|c|}{\textbf{Vendor: Netgear} (101 kernels)}                                                                        \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipseb}              & \multicolumn{1}{c|}{33}               & 3.14.77                 & \multicolumn{1}{c|}{22}                          & 2.6                    & 60                          \\
 {\tt armel}               & \multicolumn{1}{c|}{32}               & 2.6.31                  & \multicolumn{1}{c|}{17}                          & 3.14                   & 26                          \\
@@ -265,7 +274,7 @@ As the kernel version for a specific product is a manufacturer decision, the pre
 {\tt mips64eb}            & \multicolumn{1}{c|}{2}                & 2.6.36                  & \multicolumn{1}{c|}{11}                          & 4.4                    & 2                           \\
                           & \multicolumn{1}{c|}{}                 & 2.6.15                  & \multicolumn{1}{c|}{10}                          & 3.6                    & 2                           \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: Tenda} (88 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: Tenda} (88 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipsel}            & \multicolumn{1}{c|}{42}                & 2.6.22                 & \multicolumn{1}{c|}{28}                           & 2.6                     & 55                         \\
 {\tt mipseb}            & \multicolumn{1}{c|}{17}                & 3.10.9                  & \multicolumn{1}{c|}{13}                          & 3.10                    & 16                         \\
@@ -273,14 +282,14 @@ As the kernel version for a specific product is a manufacturer decision, the pre
                         & \multicolumn{1}{c|}{}                  & 2.6.30                  & \multicolumn{1}{c|}{12}                          & 3.4                     & 3                          \\
                         & \multicolumn{1}{c|}{}                  & 3.3.8                   & \multicolumn{1}{c|}{10}                          & 4.9                     & 2                          \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: Ubiquiti} (26 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: Ubiquiti} (26 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt armel}             & \multicolumn{1}{c|}{20}                & 3.6.5                  & \multicolumn{1}{c|}{20}                           & 3.6                     & 20                         \\
 {\tt mipsel}            & \multicolumn{1}{c|}{6}                 & 3.10.4                  & \multicolumn{1}{c|}{3}                           & 3.10                    & 5                          \\
                         & \multicolumn{1}{c|}{}                  & 3.10.1                  & \multicolumn{1}{c|}{2}                           & 4.4                     & 1                          \\
                         & \multicolumn{1}{c|}{}                  & 4.4.16                  & \multicolumn{1}{c|}{1}                           &                         &                            \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: D-Link} (21 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: D-Link} (21 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipseb}            & \multicolumn{1}{c|}{6}                & 2.6.19                 & \multicolumn{1}{c|}{6}                           & 2.6                     & 16                         \\
 {\tt armel }            & \multicolumn{1}{c|}{2}                & 2.6.18                  & \multicolumn{1}{c|}{5}                          & 3.4                     & 2                          \\
@@ -288,14 +297,14 @@ As the kernel version for a specific product is a manufacturer decision, the pre
                         & \multicolumn{1}{c|}{}                 & 3.4.25                  & \multicolumn{1}{c|}{2}                          & 3.10                    & 1                          \\
                         & \multicolumn{1}{c|}{}                 & 2.4.27                  & \multicolumn{1}{c|}{2}                          &                         &                            \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: Belkin} (12 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: Belkin} (12 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipseb}            & \multicolumn{1}{c|}{7}                & 2.6.30                  & \multicolumn{1}{c|}{7}                          & 2.6                     & 11                         \\
 {\tt mipsel}            & \multicolumn{1}{c|}{3}                & 2.6.22                  & \multicolumn{1}{c|}{3}                          & 2.4                     & 1                          \\
                         & \multicolumn{1}{c|}{}                 & 2.6.31                  & \multicolumn{1}{c|}{1}                          &                         &                            \\
                         & \multicolumn{1}{c|}{}                 & 2.4.18                  & \multicolumn{1}{c|}{1}                          &                         &                            \\ \hline
 
-\multicolumn{6}{c}{\textbf{Vendor: Buffalo} (3 kernels)}                                                                    \\
+\multicolumn{6}{|c|}{\textbf{Vendor: Buffalo} (3 kernels)}                                                                    \\ \hline
 \textbf{Architecture} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Version} & \multicolumn{1}{c|}{\textbf{Quantity of Images}} & \textbf{Kernel Family} & \textbf{Quantity of Images} \\ \hline
 {\tt mipsel}            & \multicolumn{1}{c|}{3}                & 4.4.25                 & \multicolumn{1}{c|}{1}                            & 4.4                     & 1                          \\
                         & \multicolumn{1}{c|}{}                 & 3.10.1                  & \multicolumn{1}{c|}{1}                           & 3.10                    & 1                          \\
@@ -321,13 +330,13 @@ Therefore, our team has implemented a way to map and automatically extract defin
     \label{fig:reports-directory}
 \end{figure}
 
-This structure was designed because in the same time that it is difficult to visually extract useful information from a large compilation of exposed firmware files together from a whole database of firmware images, it may be very useful for a security specialist to have separated the interesting files for a given firmware target. This way, if a professional wants to analyse the interesting files for a given firmware, he can easily browse the reports directory and search for the directory matching the ID of the target firmware.
+This structure was designed because in the same time that it is difficult to visually extract useful information from a large compilation of exposed firmware files together from a whole database of firmware images, it may be very useful for a security specialist to have separated the interesting files for a given firmware target. Sometimes just by looking the content of an important configuration file, a professional can pinpoint a configuration that leads to a security breach. This way, if a professional wants to analyse the interesting files for a given firmware, he can easily browse the reports directory and search for the directory matching the ID of the target firmware.
 
 More than that, this structure makes it easy to automatically generate pretty formatted reports of information for a given firmware target, and that is exactly what we implemented next.
 
 Beyond automatically generating reports, saving the interesting firmware exposed files in a specific directory allows for batch processing and data mining in the whole dataset of exposed files for all extracted firmware exposed filesystems. This idea was not implemented in this work, but can be implemented in the future during the Clustering phase of the SCREEN project. The result of the mentioned analysis could find common hashes or common configuration files containing unsafe parameters.
 
-\subsection{Automatically Generated Reports}
+\subsection{Automatically Generated Reports \& Exposed Files Samples}
 \label{sec:auto-reports}
 
 Using the code implemented in Section \ref{sec:firmware-content-statistics}, we then implemented a tool to automatically produce reports containing firmware information and interesting exposed files content for each firmware.
@@ -338,7 +347,7 @@ Figure \ref{fig:automatic-report} shows the look of the first page of the report
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\textwidth]{figs/REPORT2.png}
+    \frame{\includegraphics[width=0.75\textwidth]{figs/REPORT2.png}}
     \caption{First page of a produced report in Markdown format for a given firmware target (in this case firmware with ID = 11).}
     \label{fig:automatic-report}
 \end{figure}
@@ -348,7 +357,7 @@ Some examples of exposed interesting files we decided to include in the generate
 \begin{table}[H]
 \centering
 \caption{Exposed interesting files found in firmware filesystems and included in the generated reports.}
-\resizebox{\textwidth}{!}{\begin{tabular}{ccc}
+\resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|}
 \hline
 \textbf{File}                           & \textbf{Description}                                                                   & \textbf{Number of files} \\ \hline
 
@@ -360,7 +369,7 @@ Some examples of exposed interesting files we decided to include in the generate
 
 {\tt /etc/shadow} or {\tt /shadow}      & {\footnotesize Password hashes for system's account.}                                                                                                            & 912       \\
 
-{\tt /etc/ssh/ssh\_host\_key}           & {\footnotesize \begin{tabular}[c]{@{}c@{}}Private SSH key\\(Security Critical - Should not be exposed).\end{tabular}}                                            & 13        \\
+{\tt /etc/ssh/ssh\_host\_key}           & {\footnotesize \begin{tabular}[c]{@{}c@{}}Private SSH key\\({\color{red} \tt [Critical]} - Should not be exposed).\end{tabular}}                                            & 13        \\
 
 {\tt /etc/ssh/sshd\_config} or {\tt /etc/sshd\_config} 
                                        & {\footnotesize SSH daemon configuration files.}                                                                                                                   & 6        \\ 
@@ -371,14 +380,20 @@ Some examples of exposed interesting files we decided to include in the generate
 \label{tab:exposed-files}
 \end{table}
 
-Particularly the exposed private SSH keys are security critical. Depending on how this SSH key is used by the products in question, if any device is configured to trust the public key associated with the exposed private SSH key, the content of the private key is enough to give an attacker free SSH access to a target. Note that this exposed files search was simply conducted searching for specific files in common directories. If we implement a more advanced search (e.g search by file contents) we could possibly discover even more private SSH keys and credentials exposed in our firmware dataset.
+Note that this exposed files search was simply conducted searching for specific files in common directories. If we implement a more advanced search (e.g search by file contents) we could possibly discover even more private SSH keys and credentials exposed in our firmware dataset.
 
-Also, we investigated what is the default shell used in the firmware images. As it is commom for embedded devices, our intuition pointed that the default shell for the extracted firmware images would probably be the {\tt busybox} shell. Our investigation confirmed this intuition: From the 1279 identified shells for the extracted firmware, $96.60\%$ ($1208$) were {\tt busybox} shells and $5.40\%$ (69) were {\tt bash} shells, as shown in Table \ref{tab:shell-count}.
+Particularly the exposed private SSH keys are security critical. Depending on how this SSH key is used by the products in question, if any device is configured to trust the public key associated with the exposed private SSH key, the content of the private key is enough to give an attacker free SSH access to a target.
+
+Exposed SSH private key is enough to register a Common Vulnerabilities and Exposures (CVE) entry. The Common Vulnerabilities and Exposures is a system maintained by the United States government and by the not-for-profit Mitre Corporation in which publicly known information-security vulnerabilities and exposures are cataloged. When a new security vulnerability is discovered in a software that has been publicly released, the person who discovered it can request to register a new entry in the database referring to the vulnerability discovery. The request is then curated, and if applicable the discovered vulnerability is registered and a unique identification number (usually called CVE number or CVE ID) is assigned to it. The CVE database can be publicly consulted\footnote{\url{https://www.cve.org/}}.
+
+That being said, after consulting the CVE database for one of the firmware products with exposed SSH private keys, we discovered that the product (and vendor) is indeed listed on the database, but no CVE is registered for the product. Therefore, our team is eager to open a request to register the exposed private keys vulnerabilities, as well as any other vulnerabilities we might discovered during our ongoing research into the Common Vulnerabilities and Exposures system.
+
+Continuing our examination, we also investigated what is the default shell used in the firmware images. As it is commom for embedded devices, our intuition pointed that the default shell for the extracted firmware images would probably be the {\tt busybox} shell. Our investigation confirmed this intuition: From the 1279 identified shells for the extracted firmware, $96.60\%$ ($1208$) were {\tt busybox} shells and $5.40\%$ (69) were {\tt bash} shells, as shown in Table \ref{tab:shell-count}.
 
 \begin{table}[H]
 \centering
 \caption{Identified shells in extracted firmware filesystems.}
-\begin{tabular}{cc}
+\begin{tabular}{|c|c|}
 \hline
 \textbf{Shell} & \textbf{Number of Identified Shells} \\ \hline
 {\tt busybox}        & 1208 (94.60\%)              \\
@@ -387,38 +402,47 @@ Also, we investigated what is the default shell used in the firmware images. As 
 \label{tab:shell-count}
 \end{table}
 
-A recent post made by the cybersecurity team Claroty’s Team82 in partership with JFrog (a company that develops lead solutions for DevOps and software updates management) claims that they made the discovery of 14 vulnerabilities inside the {\tt busybox} software. The registered CVE's for each vulnerability suggests that these vulnerabilities allows for Denial of Service (DoS) and possible Remote Code Execution (RCE)~\cite{jfrog-busybox}. As shown by Table \ref{tab:shell-count}, the vulnerabilities in {\tt busybox} discovered by Claroty and JFrog are of great concern because most home wireless routers installed today may have vulnerable {\tt busybox} binaries and this could be another source for a large scale network attack. Because these vulnerabilities in {\tt busybox} were so recently disclosed, there were no able time to explore them. In future works, investigating the published CVE's for {\tt busybox} may be a great idea. More about future work suggestions in Section \ref{sec:future-work}.
+A recent post made by the cybersecurity team Claroty’s Team82 in partership with JFrog (a company that develops lead solutions for DevOps and software updates management) claims that they made the discovery of 14 vulnerabilities inside the {\tt busybox} software. The registered CVE for each vulnerability suggests that these vulnerabilities allows for Denial of Service (DoS) and possible Remote Code Execution (RCE)~\cite{jfrog-busybox}. As shown by Table \ref{tab:shell-count}, the vulnerabilities in {\tt busybox} discovered by Claroty and JFrog are of great concern because most home wireless routers installed today may have vulnerable {\tt busybox} binaries and this could be another source for a large scale network attack. Because these vulnerabilities in {\tt busybox} were so recently disclosed, there were no able time to explore them. In future works, investigating the published CVE's for {\tt busybox} may be a great idea. More about future work suggestions in Section \ref{sec:future-work}.
 
 \section{Kernel Cross-compilation \& Toolchain Building}
 
-As shown by Table \ref{tab:kernel-family-stats}, kernel family 2.6 was the second most commonly found amongst successfully extracted kernels and is a very kernel family (the longest supported 2.6 kernel ended it's life in 2016 although there is still one 2.6 kernel - 2.6.32 - that is still being maintained by Canonical Ltd.\footnote{\url{https://en.wikipedia.org/wiki/Linux_kernel_version_history}}). Therefore, we investigated the difficulties of cross-compiling a 2.6 Linux kernel. At first, we tried to cross-compile the kernel in a raw modern operating system. We chose Debian 10 (running with Linux kernel version 4.19) as the starting point for this experiment. In this environment, with {\tt gcc} version 8.3.0 as the compiler and using {\tt libc} version 2.28.10 it was not possible to compile the target kernel.
+As shown by Table \ref{tab:kernel-family-stats}, kernel family 2.6 was the second most commonly found amongst successfully extracted kernels from commercial wireless router firmware and is a very old kernel family (the longest supported 2.6 kernel ended it's life in 2016 although there is still one 2.6 kernel - 2.6.32 - that is still being maintained by Canonical Ltd.\footnote{\url{https://en.wikipedia.org/wiki/Linux_kernel_version_history}}). Therefore, we investigated the difficulties of cross-compiling a 2.6 Linux kernel. At first, we tried to cross-compile the kernel in a raw modern operating system. We chose Debian 10 (running with Linux kernel version 4.19) as the starting point for this experiment. In this environment, with {\tt gcc} version 8.3.0 as the compiler and using {\tt libc} version 2.28.10 it was not possible to compile the target kernel.
 
 Then we downloaded an old version of the Debian operating system, with a release date similar to the 2.6 Linux kernel. Debian 3.1r8 (kernel 2.4.27) was used for this experiment. Using this old operating system, with {\tt gcc} version 3.3.5 as the compiler and using {\tt libc} version 2.3.2, we had success in compiling the target kernel.
 
-This highlights the impact the toolchain (compiler, binary utilities and library versions) has on kernel compiling process and therefore to achieve a way to automate kernel compiling, we also need a way to automate toolchain building. In this context, we adopted the {\tt crosstool-ng} tool. With this program, the user can define, between some pre-configured settings, specific versions for each tool inside the toolchain, and the program then tried to compile the desired toolchain.
+% This highlights the impact the toolchain (compiler, binary utilities and library versions) has on kernel compiling process and therefore to achieve a way to automate kernel compiling, we also need a way to automate toolchain building. In this context, we adopted the {\tt crosstool-ng} tool. With this program, the user can define, between some pre-configured settings, specific versions for each tool inside the toolchain, and the program then tried to compile the desired toolchain.
 
-Using {\tt crosstool-ng} we were then able to successfully compile a 2.6 Linux kernel inside a Debian 10 (modern operating system). However, when trying to cross-compile the target kernel for the {\tt MIPS} architecture (cross-compiling), we still faced issues that did not allow the kernel to compile successfully and further investigation is needed in order to build a working toolchain for this scenario.
+This highlights the impact the toolchain (compiler, binary utilities and library versions) has on kernel compiling process and therefore to achieve a way to automate kernel compiling, we also need a way to automate toolchain building. In this context, we adopted a tool called {\tt crosstool-ng}\footnote{\url{https://github.com/crosstool-ng}}. The purpose of this tool is to help developers build their tools to other systems (specially for other architectures - a process called cross-compiling). To achieve that, {\tt crosstool-ng} allows the user to define, between some pre-configured settings, specific versions for each tool inside the toolchain used during software compile, and the program then tries to compile the desired toolchain. The user can then use the toolchain compiled by the {\tt crosstool-ng} to finally compile the desired software. Figure \ref{fig:crosstool} shows a diagram explaining the basic operation performed by the {\tt crosstool-ng}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{figs/crosstool.pdf}
+    \caption{Diagram illustrating the high-level view of the {\tt crosstool-ng} tool being used to compile a software for the {\tt MIPS} architecture from a {\tt x86} host. Note that system toolchain tools version is not the same as the custom build toolchain tools.}
+    \label{fig:crosstool}
+\end{figure}
+
+Using {\tt crosstool-ng} we were then able to successfully compile a 2.6 Linux kernel inside a Debian 10 (modern operating system). However, when trying to cross-compile the target kernel for the {\tt MIPS} architecture (cross-compiling), we still faced issues that did not allow the kernel to compile successfully and further investigation is needed in order to build a working toolchain for this scenario. Nevertheless, {\tt crosstool-ng} seems to be an adequate tool to use in order to build an automated kernel compilation solution to support the SCREEN idealized architecture for re-hosting in the future.
 
 \section{Firmware Re-hosting}
 
-Regarding firmware re-hosting, in this section we will describe our team efforts towards re-hosting firmware images using the projects mentioned in the related work session.
+Regarding firmware re-hosting, in this section we will describe our team efforts towards performing the re-hosting of the acquired wireless router firmware images to emulate it's behavior with the intention to, in a future work, analyse it's overall security using an offensive security approach. We will describe our results obtained when taking both a more manual approach and a more automated one. The manual approach will follow a path that was already explored in the work of \cite{victor-sales} as a way to gain a minimum knowledge about the practical aspects involved in firmware re-hosting with QEMU. The automated approach will explore the Firmadyne~\cite{firmadyne} and Jetset~\cite{jetset} tools in order to perform re-hosting of firmware images in scale.
 
 \subsection{Manual Re-hosting}
 \label{sec:manual-rehosting}
 
-Before evaluating the performance of automated tools in the process of re-hosting firmware, to better understand how the QEMU tool can be used to boot and emulate a system, we first investigated how to manually re-host a firmware configuring QEMU in system mode emulation and preparing a firmware image to be re-hosted. In it's work, \cite{victor-sales} the fundamentals for manually re-hosting a donwloaded firmware image and presents it's results while emulating two different firmware images from wireless routers.
+Before evaluating the performance of automated tools in the process of re-hosting firmware, to better understand how the QEMU tool can be used to boot and emulate a system, we first investigated how to manually re-host a firmware configuring QEMU in system mode emulation and preparing a firmware image to be re-hosted. In it's work, \cite{victor-sales} explains the fundamentals for manually re-hosting a donwloaded firmware image and presents it's results while emulating two different firmware images from wireless routers.
 
 In \cite{victor-sales} work, re-hosting is done in a very similar approach with the one taken by Firmadyne~\cite{firmadyne} authors, in which firmware kernel is replaced with a pre-compiled similar Linux kernel, and then QEMU is used in system mode to boot the custom kernel. \cite{victor-sales} uses a pre-compiled Linux kernel version 2.6.35 with a minimal filesystem to boot a firmware and leverage QEMU network capabilities to bridge the host operating system and the system emulated with QEMU. After that, he uses the {\tt scp} utility (a command line tool to copy files using the SSH protocol) to copy the contents of the original firmware filesystem to the re-hosted operating system running with QEMU.
 
-We decided to follow the steps described for this ``manual'' firmware re-hosting to gain more understanding of the process. The firmware with ID = 11 was randomly selected to be manually emulated. Before executing the steps to emulate the firmware with QEMU, reading the automatically generated report we implemented in Section \ref{sec:auto-reports} can already provide us with useful information about the firmware we want to re-host. Image \ref{fig:automatic-report} already shows the first page of the report generated for the firmware with ID = 11 (our target firmware in this experiment). From the first page of the report we generated automatically we already have the pieces of information required for starting the manual re-hosting:
+We decided to follow the steps described for this ``manual'' firmware re-hosting to gain more understanding of the process. The firmware with ID = 11 was selected to be manually emulated (this was the first firmware id that showed up when quering the database). Before executing the steps to emulate the firmware with QEMU, reading the automatically generated report we implemented in Section \ref{sec:auto-reports} can already provide us with useful information about the firmware we want to re-host. Image \ref{fig:automatic-report} already showed the first page of the report generated for the firmware with ID = 11 (our target firmware in this experiment). From the first page of the report we generated automatically we already have the pieces of information required for starting the manual re-hosting:
 
 \begin{itemize}
-    \item Firmware arquitecture is MIPS Big Endian ({\tt mipseb}): We shall use the {\tt qemu-system-mips} to translate this firmware binaries correctly.
-    \item Firmware original kernel is Linux version 2.6.30.
+    \item Firmware arquitecture is MIPS Big Endian ({\tt mipseb}): From the binaries provided by QEMU, we shall use the {\tt qemu-system-mips} executable to translate this firmware binaries correctly.
+    \item Firmware original kernel is Linux kernel version 2.6.30.
     \item The {\tt /etc/inittab} file from this firmware is exposed and from it's content we have the lead that the {\tt /etc/init.d/rcS} file from this firmware filesystem has the basics instructions of this router operation.
 \end{itemize}
 
-We then downloaded a basic Debian kernel version 2.6.32 (close to our target kernel version) and filesystem from a pre-compiled binary provided on the Debian project website\footnote{https://people.debian.org/~aurel32/qemu/mips/}. Following the instructions provided~\cite{victor-sales} the basic firmware boot consisted of executing the command shown in Code \ref{code:qemu-manual}.
+We then downloaded a basic Debian kernel version 2.6.32 (close to our target kernel version) and filesystem from a pre-compiled binary provided on the Debian project website\footnote{\url{https://people.debian.org/~aurel32/qemu/mips/}}. Following the instructions provided~\cite{victor-sales} the basic firmware boot consisted of executing the command shown in Code \ref{code:qemu-manual}.
 
 \begin{listing}[!ht]
 \inputminted[fontsize=\footnotesize,breaklines]{text}{Code/qemu-manual}
@@ -468,7 +492,7 @@ After the system has booted, we copied the original firmware filesystem contents
         \label{fig:qemu-manual-error}
 \end{figure}
 
-Next we followed the approach of reading the contents of the most prominent files loaded by the {\tt /etc/inittab} and try to at least emulate the most simple firmware behavior. Inspecting the {\tt /etc/init.d/rcS} file, we discover that this file loads a lot of other files. Inspecting each of the loaded files, we discover that the {\tt /etc/init.d/daemon.rc} file loads the web server behavior of the router. Code \ref{code:daemon.rc} shows the header of the {\tt /etc/init.d/daemon.rc} file.
+Next we followed the approach of not copying all the files from the original firmware filesystem to the emulated machine, but only copying the most important files to emulate the firmware behavior. In this sense, we decided to read the {\tt /etc/inittab}, to discover the most prominent files loaded during the boot process (content shown on Figure \ref{fig:automatic-report}). The boot process ends after loading a file called {\tt /etc/init.d/rcS}. Inspecting the {\tt rcS} file contents, we discover that this file loads a lot of other files. Inspecting each of the loaded files, we discover that the {\tt /etc/init.d/daemon.rc} file finally loads the web server behavior of the router. Code \ref{code:daemon.rc} shows the header of the {\tt /etc/init.d/daemon.rc} file.
 
 \begin{listing}[!ht]
 \inputminted[fontsize=\footnotesize]{bash}{Code/daemon.rc}
@@ -476,40 +500,127 @@ Next we followed the approach of reading the contents of the most prominent file
 \label{code:daemon.rc}
 \end{listing}
 
-This gives us an insight about this firmware's basic functionality. It uses the {\tt mini\_httpd} binary to host a Web Server and serves the {\tt /usr/www} directory. We were not successful when trying to execute the {\tt mini\_httpd} binary inside the emulated environment. It seems that the binary headers of the {\tt mini\_httpd} binary copied to the emulated machine had corrupted headers (error accused by the {\tt file} command inside the virtual system). As emulating firmware behavior individually is not the goal of our work, we ended the ``manual re-hosting'' here, as - although the firmware was not completely emulated - the experiment was already sufficient to provide valuable insights about the re-hosting process and router firmware behavior.
+This gives us an insight about this firmware's basic functionality. It uses the {\tt mini\_httpd} binary to host a Web Server and serves the {\tt /usr/www} directory. We were not successful when trying to execute the {\tt mini\_httpd} binary inside the emulated environment. It seems that the binary headers of the {\tt mini\_httpd} binary copied to the emulated machine had corrupted headers (error accused by the {\tt file} command inside the virtual system). As emulating firmware behavior individually is not the goal of our work, we ended the ``manual re-hosting'' here, as - although the firmware was not completely emulated - the experiment was already sufficient to provide valuable insights about the re-hosting process with QEMU and basic router firmware behavior.
+
+Figure \ref{fig:illustrated-manual-rehosting} illustrates a diagram of the activities that were performed in order to execute this behavior emulation via manual re-hosting the firmware.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figs/ManualReHosting.pdf}
+    \caption{Diagram of the activities performed for manually emulating firmware behavior. Emulating a {\tt MIPS} firmware inside a {\tt x86} host machine. QEMU does the binary translation.}
+    \label{fig:illustrated-manual-rehosting}
+\end{figure}
+
 
 \subsection{Re-hosting via Firmadyne}
 
-Firmadyne provides scripts that can produce a {\tt QEMU} compatible disk from a firmware filesystem (that was previously extracted) applying some tweaks and patches in the filesystem of this produced disk. For instance the script replaces the {\tt busybox} binary with a statically-compiled version, replaces the password of the root user, guarantees that the filesystem contains some critical files, replaces the NVRAM library and many other minor tweaks.
+Firmadyne provides scripts that can produce a {\tt QEMU} compatible disk from a firmware filesystem (that was previously extracted) applying some tweaks and patches in the filesystem of this produced disk. For instance the script replaces the {\tt busybox} binary with a statically-compiled version, replaces the password of the root user for a default one, guarantees that the filesystem contains some critical files, replaces the Non-volatile random-access memory (NVRAM) library and many other minor tweaks.
 
-This is already a great advantage when compared to the manual re-hosting described in Section \ref{sec:manual-rehosting}, because when manually copying the filesystem with the {\tt scp} utilities, we faced error that prevented the firmware to sucessfully reboot. Firmadyne~\cite{firmadyne} implementation uses this approach of creating a system disk based on the original firmware filesystem and applying patches to fix the firmware boot (like the NVRAM patch). If a firmware boots successfully, it's execution fidelity is considerably greater than the one we can have when emulating the firmware behavior simply by copying the most critical files served by the HTTP server.
+This is already a great advantage when compared to the manual re-hosting described in Section \ref{sec:manual-rehosting}, because when manually copying the filesystem with the {\tt scp} utilities, we faced error that prevented the firmware to successfully reboot. Firmadyne implementation uses this approach of creating a system disk based on the original firmware filesystem and applying patches to fix the firmware boot (like the NVRAM patch). If a firmware boots successfully, it's execution fidelity is considerably greater than the one we can have when emulating the firmware behavior simply by copying the most critical files served by the Hypertext Transfer Protocol (HTTP) server.
 
 % ==========================================================================================================
 
-The first experimentation with re-hosting via Firmadyne was to try to perform the re-hosting of at least one firmware by manually executing Firmadyne's instructions one by on.e Selecting at random three firmware images that were successfully extracted and had the kernel version and architecture detected we made the first re-hosting experiments using the scripts provided by Firmadyne. The three selected firmware images on this steps were from the vendors Netgear, Belkin and Buffalo, executing Linux kernel version {\tt 3.14.4} ({\tt ARM}), {\tt 2.6.30} ({\tt MIPS}) and {\tt 3.10.1} ({\tt MIPS}) respectively.
+The first experimentation with re-hosting via Firmadyne was to try to perform the re-hosting of at least one firmware by manually executing Firmadyne's instructions one by one. Selecting at random three firmware images that were successfully extracted and had the kernel version and architecture detected we made the first re-hosting experiments using the scripts provided by Firmadyne. The three selected firmware images on this steps were from the vendors Netgear, Belkin and Buffalo, executing Linux kernel version {\tt 3.14.4} ({\tt ARM}), {\tt 2.6.30} ({\tt MIPS}) and {\tt 3.10.1} ({\tt MIPS}) respectively.
 
 While trying to re-host the selected firmware files with Firmadyne, only the Netgear firmware had its network interface successfully detected before the actual re-hosting. Table \ref{tab:fist-rehosting} shows the first results when trying to execute the Firmadyne's re-hosting capabilities for the three selected firmware images mentioned in the previous paragraph.
 
 \begin{table}[H]
 \centering
 \caption{First results when experimenting with Re-hosting via Firmadyne. Firmware images selected at random. Minimal Firmadyne automation involved.}
-\begin{tabular}{cccccc}
+\resizebox{\textwidth}{!}{\begin{tabular}{|c|c|c|c|c|c|}
 \hline
 \textbf{Firmware ID} & \textbf{Vendor} & \textbf{Architecture} & \textbf{Kernel} & \textbf{Network Interface} & \textbf{Result} \\ \hline
-2                    & Netgear         & {\tt ARM}                   & {\tt 3.14.4}                  & {\tt 192.168.1.250}                       &  Sucess                          \\
+2                    & Netgear         & {\tt ARM}                   & {\tt 3.14.4}                  & {\tt 192.168.1.250}                       &  Missing Peripheral           \\
 11                   & Belkin          & {\tt MIPS}                  & {\tt 2.6.30}                 & Not Detected                        &    Network Error                       \\
 48                   & Buffalo         & {\tt MIPS}                 & {\tt 3.10.1}                 & Not Detected                        &        Kernel Panic                    \\ \hline
-\end{tabular}
+\end{tabular}}
 \label{tab:fist-rehosting}
 \end{table}
 
-After blindly trying to execute Frimadyne's re-hosting capabilities and failing, we then tried to better understand the tool by extensively reading it's code. Analysing Firmadyne's repository one can see that if does three basic steps in order to try the re-hosting of a well extracted and known firmware image (Firmadyne does not perform these steps atuomatically. The user has to execute then in order manually):
+After blindly trying to execute Firmadyne's re-hosting capabilities and failing, we then tried to better understand the tool by extensively reading it's code. Analysing Firmadyne's repository one can see that if does three basic steps in order to try the re-hosting of a well extracted and known firmware image (Firmadyne does not perform these steps atuomatically. The user has to execute then in order manually):
 
 \begin{enumerate}
-    \item For one extracted firmware filesystem, build a QEMU disk (emulates the disk image of a hard drive) applying the filesystem patches to bypass firmware peripherals dependencies. This process is costly and slow, because it requires to uncompress the firmware filesystem (saved in a directory inside our project), create a virtual partition using {\tt fdisk}, and copying the extracted filesystem to this new partition, saving it to a file and storing it in a directory that is designed to hold these generated QEMU disks. This is done by the {\tt makeImage.sh} script from Firmadyne repository.
+    \item For one extracted firmware filesystem, build a QEMU disk (emulates the disk image of a hard drive) applying the filesystem patches to bypass firmware peripherals dependencies. This process is costly and very slow, because it requires to uncompress the firmware filesystem (saved in a directory inside our project), create a virtual partition using {\tt fdisk}, and copying the extracted filesystem to this new partition, saving it to a file and storing it in a directory that is designed to hold these generated QEMU disks. This is done by the {\tt makeImage.sh} script from Firmadyne repository.
     
-    \item For a already build QEMU disk, Firmadyne then tries to infer which network ip address this router would probably use. This is done by starting a process similar to the final process of re-hosting. QEMU is started on system mode with the same exact command to be used in the next step to perform the final re-hosting of the firmware, but with a timeout of 60 seconds. During these 60 seconds the firmware is trying to boot with QEMU, Firmadyne then monitors the network interfaces of the host machine. When it detect changes in the host network, it associates this change with the firmware trying to boot within QEMU. This way Firmadyne tries to detect the interface address of the emulated firmware. This is done by the {\tt inferNetwork.sh} script from Firmadyne repository.
+    \item For an already built QEMU disk, Firmadyne then tries to infer which network Internet Protocol Address (IP Address) this router would probably use. This is done by starting a process similar to the final process of re-hosting. QEMU is started on system mode with the same exact command to be used in the next step to perform the final re-hosting of the firmware, but with a timeout of 60 seconds. During these 60 seconds the firmware is trying to boot with QEMU, Firmadyne then monitors the network interfaces of the host machine. When it detect changes in the host network, it associates this change with the firmware trying to boot within QEMU. This way Firmadyne tries to detect the interface address of the emulated firmware. When the network is detected, a customized run script specific for this firmware is saved in the image directory. The custom run script allows QEMU to launch the re-hosted firmware and also tells QEMU to create a network tunnel connecting with the network interface the re-hosted firmware is going to use. This allows us to ``reach'' the re-hosted firmware from our network. This is done by the {\tt inferNetwork.sh} script from Firmadyne repository.
     
-    \item Finally, the final step is to run the re-hosted firmware. This is done by simply executing the correct QEMU binary for a given architecture, and passing as a parameter to the execution of QEMU: The pre-compiled and instrumented Linux kernel (has one version if running for a MIPS architecture and one version specific for a ARM architecture), and the QEMU disk consisted of the target firmware filesystem patched with NVRAM fix, blank root password and some other tweaks. This is done by the {\tt run.sh} script from Firmadyne repository.
+    \item Finally, the final step is to run the re-hosted firmware. This is done by simply executing the correct QEMU binary for a given architecture, and passing as a parameter to the execution of QEMU: The pre-compiled and instrumented Linux kernel (has one version if running for a MIPS architecture and one version specific for a ARM architecture), and the QEMU disk consisted of the target firmware filesystem with Firmadyne patches applied. This is done by the {\tt run.sh} script that is generated in the previous step (and not the one from Firmadyne repository).
 \end{enumerate}
 
+After applying the {\tt inferNetwork.sh} script in a large number of firmware images (to generate the custom scripts in batch), we received a lot of negative results (interfaces not being detected). Debugging what could be the cause, we discovered that the default {\tt run.sh} script that is used to try to boot the firmware in this step of network detection, redirects the output of the firmware to a file in the hard drive. This process really slows down firmware execution, in a sense that the 60 seconds timeout defined for the network detection phase is not enough. We changed the scripts to use a directory that was mounted in the TMPFS, hoping that redirecting the output to the RAM could increase the emulation speed. It worked, and after running the {\tt inferNetwork.sh} again we finally could see more firmware having it's network interface detected. Because of the 60 timeout, and because only one {\tt inferNetwork.sh} can run at a time (because of a network address collision happens when trying to run more than once), this process is also slow and not very effective, as it takes at least 60 seconds per firmware vendor and it requires to be executed in a sequential way.
+
+\textbf{COLOCAR UMA ESTATÍSTICA (TABELA) AQUI}
+
+
+After executing the network inference, we tried then executing the generated {\tt run.sh} for some of the firmware with correctly identified network interface. When executing Firmadyne~\cite{firmadyne} with the sample firmware provided by the repository (downloaded from a vendor website), the re-hosting phase of the firmware emulation is indeed successful, as illustrated by Figure \ref{fig:emulated-sucess}.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{figs/sucess.png}
+         \caption{Re-hosted firmware booted successfully.}
+         \label{fig:qemu-sucess1}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{figs/sucess2.png}
+         \caption{Web interface of the re-hosted firmware.}
+         \label{fig:qemu-sucess2}
+     \end{subfigure}
+        \caption{Firmadyne successfully re-hosting the sample fimrware. Firmware designed to run on {\tt ARM} running on {\tt x86}.}
+        \label{fig:emulated-sucess}
+\end{figure}
+
+However, when executing with the firmware images in our dataset (acquired by the scraper and enumerated by the process described in the previous sections), the results are still very diverse. A lot of different error appear when trying to emulate some firmware images, for instance complains about not found NVRAM entry keys (Firmadyne allows for compiling a new {\tt libnvram} containing custom used added keys) or errors when the firmware execution is trying to access a peripheral that is not found by the system (for instance in our case we see many firmware executions complaining when trying to access files that would be related to a display LED). Figure \ref{fig:firmadyne-errors} shows some of the different error messages we obtained for different firmware images during re-hosting. But we also could indeed re-host some of the firmware with success, as shown by Figure \ref{fig:firmadyne-success} in which it is shown the post boot login console from a firmware designed to execute on the {\tt MIPS} architecture running on our {\tt x86} computer.
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{figs/ext2-error.png}
+         \caption{Error trying to access files.}
+         \label{fig:}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{figs/ioctl2-error.png}
+         \caption{{\tt ioctl} error and missing peripheral.}
+         \label{fig:}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{figs/led-error.png}
+         \caption{{\tt sysinit} error because of missing peripheral.}
+         \label{fig:}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.45\textwidth}
+         \centering
+         \includegraphics[width=\textwidth]{figs/nvram-error.png}
+         \caption{Missing NVRAM key error.}
+         \label{fig:}
+     \end{subfigure}
+        \caption{Errors faced when trying to re-host different firmware images from our dataset.}
+        \label{fig:firmadyne-errors}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figs/firmadyne-success.png}
+    \caption{Firmadyne successfully re-hosting the sample fimrware. Firmware designed to run on {\tt MIPS} running on {\tt x86}.}
+    \label{fig:firmadyne-success}
+\end{figure}
+
+The results obtained when executing the final re-hosting steps with Firmadyne are very diverse. We can perceive that the idea used does work, as we have firmware that can successfully boot and work as intended. However, there are still lots of errors present on the boot process of most of the images. Most of the errors are related to missing entries on the NVRAM or missing files. Adding more entries and recompiling the {\tt libnvram} may help with the missing entries; enhancing the extraction process we may find that the firmware contains more than one partition, and thus, we could seek the missing files. Moreover, one difficult task is on how to evaluate in scale if the booting process was successfully or not. For an individual firmware image, a human can easily tell when the firmware was able to boot without problems. But finding a way to check this at scale is still something to debate. Firmadyne uses a mere {\tt ping} to check if the firmware is available on the local network. If the firmware answers the network packet then it considers that the firmware had it's boot successful. Although this already brings some automation to the table, it is still not the ideal solution.
+
+
+\subsection{Re-hosting via Jetset}
+\label{sec:result-jetset}
+
+Jetset~\cite{jetset} uses a symbolic execution engine with a custom developed algorithm to try to boot a firmware from a device with peripherals dependencies, as already discussed in Chapter \ref{chap:related}. We believe this novel approach is very clever, and we want to investigate further to discover if it could fit our project. However, to the scope and time range of this paper, we only read it's source code to understand the tool principles and tested Jetset with it's default proof-of-concept firmware images that were used to produce it's article (and so we had at hand all the necessary inputs to start the firmware symbolic inference).
+
+In future works (see Section \ref{sec:future-work}) we intend to deeper understand the tool (we are going to need to gain more knowledge about symbolic execution as well) and try to integrate it into our SCREEN project if we can prove it is going to be of help in the task of re-hosting wireless router firmware devices.
