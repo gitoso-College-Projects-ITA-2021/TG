@@ -1,15 +1,37 @@
-TODO (WIP)
+% TODO (WIP)
 
-Anotações:
-\begin{itemize}
+% Anotações:
+% \begin{itemize}
 
-    \item Uma contribuição é o recoinassance de firmwares de roteadores
-    \item Portanto permite explorar falhas como a do busybox
-    \item Explorar as chaves privadas expostas (pelo vendor D-Link)
-    \item Potencial fonte de CVE
-    \item Re-hosting de kernel é um problema em aberto
+%     \item Uma contribuição é o recoinassance de firmwares de roteadores
+%     \item Portanto permite explorar falhas como a do busybox
+%     \item Explorar as chaves privadas expostas (pelo vendor D-Link)
+%     \item Potencial fonte de CVE
+%     \item Re-hosting de kernel é um problema em aberto
     
-\end{itemize}
+% \end{itemize}
+
+In this final chapter we will wrap the ideas presented in this paper, share our conclusions, enumerate our work contributions and finally provide new research ideas and future work that can be done taking into consideration the results obtained in this work.
+
+\section{Conclusions}
+
+In this work, we explored a way to perform information security analysis on wireless router firmware devices based on the Linux system using a technique called re-hosting, which consists of executing an embedded software outside the original hardware in which it was designed to operate. We started by explaining in Chapter \ref{chap:fundamentals} what is in its most basic definition a firmware, the essence of the Linux system boot process, how re-hosting can be performed using an emulator software that performs binary translation called QEMU, and we also explained what a software vulnerability is together with the most common techniques used by security analysts to perform software security analysis. We then also presented some of the most common tools used by professionals when working with firmware analysis.
+
+After that, in Chapter \ref{chap:related} we presented other related works around firmware security analysis and the state-of-art tools for each approach on how to overcome missing peripherals when working with firmware without its original hardware. We selected one of these tools, called Firmadyne~\cite{firmadyne} to use as a basis for our work, as this tool has the same target firmware as our research (wireless router firmware) and is already a very complete solution.
+
+In Chapter \ref{chap:screen} we presented the architecture we have in mind for a bigger research project called SCREEN in which we intend to continue working in. Our idea is to develop a firmware analysis pipeline that uses abstraction replacement to re-host firmware images with custom kernels. Our approach differs from the one used by Firmadyne in the sense that we intend to automate kernel compilation so that a custom kernel similar to the firmware image original kernel can be used during the re-hosting phase, increasing emulation fidelity and code coverage. In this chapter we also show how we intended to structure the work that is described in this paper.
+
+Finally, in Chapter \ref{chap:exp_and_results} we describe our work environment, how our exploration was performed and the results we obtained for each task. We acquired 9176 firmware images using a fork of the original web scraper implemented as part of the Firmadyne~\cite{firmadyne} tool. We then modified the original extraction script from Firmadyne to increase the number of extracted firmware. The original extraction script already tries to extract the kernel version and the architecture of the firmware being extracted. However, the original kernel detection slows the extraction phase and had a low detection rate. We then implemented a heuristic approach to extract the kernel version by looking at a firmware filesystem. This enhancement increased kernel version detection by $384.49\%$. Finally, using the pieces of information gathered in the extraction phase, we extracted statistics about the most used kernel version and architecture for each router firmware vendor.
+
+After extracting firmware kernel and filesystem, and producing components statistics, we then focused on extracting statistics from the contents of the files inside firmware images' filesystem. We developed a tool to search for a given list of files inside all the extracted filesystems from our repository. We then used this tool to produce pretty formatted (using the Markdown language) reports for each firmware. These reports could serve as a starting point for when a security specialist wants to analyze a specific firmware target. In this process, we discovered that some of the firmware devices from our repository contained exposed SSH private key credentials. As this is security-critical, we intend to report this security exposure to the Common Vulnerabilities and Exposures system.
+
+Next we explored how one can automate kernel cross-compilation and tested a tool called {\tt crosstool-ng} that is adequate to this task, although we still faced some impediments when trying to cross-compile old Linux kernel from a host {\tt x86} machine to the {\tt MIPS} architecture.
+
+Finally, our final activity was towards exploring how to perform the actual firmware re-hosting. We start by exploring how to use the QEMU emulator to perform a manual firmware behavior emulation on top of a minimal Debian system compiled for the {\tt MIPS} architecture. In the sequence, we then show our results when trying to use Firmadynes' code to perform a more automated kind of firmware re-hosting. Although we could successfully emulate some of the firmware from our repository, most of the firmware emulation still faced errors. Moreover, it is still necessary to enhance the applicability of the tool in scale, enhancing the way to verify both if a firmware booted successfully and to store what are the most common error that happened when the firmware could not boot completely, as this information can then be used to enhance the re-hosting process.
+
+As our last words, we would like to highlight that firmware re-hosting is still an open problem. With this in mind, we believe this work was relevant as a way to gain a first understanding of the field and to introduce the researchers to the extensive hands-on aspects of this field. The activities developed for this work will be essential to the accomplishment of the SCREEN project and the knowledge gained will be of extreme value to all of the researchers contributing to our project (but especially to this author).
+
+In the sequence, we will wrap the contributions produced by this work and future work and research that can be developed to continue this work.
 
 \section{Contributions}
 
