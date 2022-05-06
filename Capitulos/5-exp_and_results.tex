@@ -60,8 +60,8 @@ In total, 9,176 firmware images were downloaded throughout this process. Table \
 \begin{tabular}{|c|c|c|}
 \hline
 \textbf{Vendor} & \textbf{Firmware Images} & \textbf{Combined File Size} \\ \hline
-OpenWrt$^*$     & 3898                     & 15 GB                       \\ 
-Netgear         & 1544                     & 48 GB                       \\ 
+OpenWrt$^*$     & 3,898                     & 15 GB                       \\ 
+Netgear         & 1,544                     & 48 GB                       \\ 
 MikroTik        & 873                      & 11 GB                       \\ 
 TP-Link         & 788                      & 7.2 GB                      \\ 
 D-Link          & 591                      & 8.8 GB                      \\ 
@@ -109,7 +109,7 @@ When extracting firmware, if Firmadyne's extraction script is capable of identif
 
 As not all kernels are identified by the {\tt binwalk} tool during the extraction phase, we also developed a heuristic that uses regular expressions to search the extracted filesystem of each firmware image (querying the database) whose kernel was not identified during extraction and try to find directories that could reveal kernel version (e.g. {\tt /lib/modules/2.6.31} is an indication that this image contains a 2.6.31 Linux kernel). This search is extremely fast compared to the filesystem extraction process and increased the number of kernel versions detected. Initially, with Firmadyne's \cite{firmadyne} original extraction script, only 374 kernels were identified amongst the 1,971 (18.98\%) of the total amount of firmware images. After running the described heuristics to determine kernel version from the filesystem, the number of identified kernels increased to 1812 (384.49\% greater).
 
-When considering only the firmware files with root filesystem extracted and architecture identified, 90.26\% (1640 of 1817 images) had the kernel identified (and it was a Linux kernel). That is, 1640 firmware images of our dataset are running Linux and had its complete tuple identification: Architecture, Kernel Version and Root Filesystem. Figure \ref{fig:stats-funnel} shows the funnel of success for firmware extraction and illustrates the statistics just described.
+When considering only the firmware files with root filesystem extracted and architecture identified, 90.26\% (1,640 of 1,817 images) had the kernel identified (and it was a Linux kernel). That is, 1,640 firmware images of our dataset are running Linux and had its complete tuple identification: Architecture, Kernel Version and Root Filesystem. Figure \ref{fig:stats-funnel} shows the funnel of success for firmware extraction and illustrates the statistics just described.
 
 \begin{figure}[H]
     \centering
@@ -227,7 +227,7 @@ The decision to include statistics with and without the aforementioned vendors' 
 \label{tab:kernel-family-stats-openwrt}
 \end{table}
 
-As the kernel version for a specific product is a manufacturer decision, the previous statistics are biased by the manufacturer we could extract the most number of firmware images. Therefore, Table \ref{tab:kernel-stats-by-vendor}provides the same previous statistics grouped by router vendor. The code implemented to extract the statistics shown here from the firmware database and the respective output can be viewed in the Jupyter notebooks output appended in our project's GitHub repository~\cite{github:c2dc-toso}. 
+As the kernel version for a specific product is a manufacturer decision, the previous statistics are biased by the manufacturer we could extract the most number of firmware images. Therefore, Table \ref{tab:kernel-stats-by-vendor} provides the same previous statistics grouped by router vendor. The code implemented to extract the statistics shown here from the firmware database and the respective output can be viewed in the Jupyter notebooks output appended in our project's GitHub repository~\cite{github:c2dc-toso}. 
 
 \begin{table}[H]
 \centering
@@ -388,7 +388,7 @@ An exposed SSH private key is enough to register a Common Vulnerabilities and Ex
 
 That being said, after consulting the CVE database for one of the firmware products with exposed SSH private keys, we discovered that the product (and vendor) is indeed listed on the database, but no CVE is registered for the product. Therefore, our team is eager to open a request to register the exposed private key vulnerabilities, as well as any other vulnerabilities we might discover during our ongoing research into the Common Vulnerabilities and Exposures system.
 
-Continuing our examination, we also investigated what is the default shell used in the firmware images. As it is common for embedded devices, our intuition pointed that the default shell for the extracted firmware images would probably be the {\tt busybox} shell. Our investigation confirmed this intuition: From the 1279 identified shells for the extracted firmware, $96.60\%$ ($1208$) were {\tt busybox} shells and $5.40\%$ (69) were {\tt bash} shells, as shown in Table \ref{tab:shell-count}.
+Continuing our examination, we also investigated what is the default shell used in the firmware images. As it is common for embedded devices, our intuition pointed that the default shell for the extracted firmware images would probably be the {\tt busybox} shell. Our investigation confirmed this intuition: From the 1,279 identified shells for the extracted firmware, $96.60\%$ (1,208) were {\tt busybox} shells and $5.40\%$ (69) were {\tt bash} shells, as shown in Table \ref{tab:shell-count}.
 
 \begin{table}[H]
 \centering
@@ -396,7 +396,7 @@ Continuing our examination, we also investigated what is the default shell used 
 \begin{tabular}{|c|c|}
 \hline
 \textbf{Shell} & \textbf{Number of Identified Shells} \\ \hline
-{\tt busybox}        & 1208 (94.60\%)              \\
+{\tt busybox}        & 1,208 (94.60\%)              \\
 {\tt bash}           & 69 (5.40\%)                 \\ \hline
 \end{tabular}
 \label{tab:shell-count}
@@ -572,7 +572,7 @@ After executing the network inference, we tried then executing the generated {\t
         \label{fig:emulated-sucess}
 \end{figure}
 
-However, when executing with the firmware images in our dataset (acquired by the scraper and enumerated by the process described in the previous sections), the results are still very diverse. A lot of different errors appear when trying to emulate some firmware images, for instance complaints about not found NVRAM entry keys (Firmadyne allows for compiling a new {\tt libnvram} containing custom used added keys) or errors when the firmware execution is trying to access a peripheral that is not found by the system (for instance in our case we see many firmware executions complaining when trying to access files that would be related to a display LED). Figure \ref{fig:firmadyne-errors} shows some of the different error messages we obtained for different firmware images during re-hosting. But we also could indeed re-host some of the firmware with success, as shown by Figure \ref{fig:firmadyne-success} in which it is shown the post-boot login console from a firmware designed to execute on the {\tt MIPS} architecture running on our {\tt x86} computer.
+However, when executing with the firmware images in our dataset (acquired by the scraper and enumerated by the process described in the previous sections), the results are still very diverse. A lot of different errors appear when trying to emulate some firmware images, for instance, complaints about not found NVRAM entry keys (Firmadyne allows for compiling a new {\tt libnvram} containing custom used added keys) or errors when the firmware execution is trying to access a peripheral that is not found by the system (for instance in our case we see many firmware executions complaining when trying to access files that would be related to a display LED). Figure \ref{fig:firmadyne-errors} shows some of the different error messages we obtained for different firmware images during re-hosting. But we also could indeed re-host some of the firmware with success, as shown by Figure \ref{fig:firmadyne-success} in which it is shown the post-boot login console from a firmware designed to execute on the {\tt MIPS} architecture running on our {\tt x86} computer.
 
 \begin{figure}[H]
      \centering
@@ -610,16 +610,16 @@ However, when executing with the firmware images in our dataset (acquired by the
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/firmadyne-success.png}
-    \caption{Firmadyne successfully re-hosting the sample fimrware. Firmware designed to run on {\tt MIPS} running on {\tt x86}.}
+    \caption{Firmadyne successfully re-hosting the sample firmware. Firmware designed to run on {\tt MIPS} running on {\tt x86}.}
     \label{fig:firmadyne-success}
 \end{figure}
 
-The results obtained when executing the final re-hosting steps with Firmadyne are very diverse. We can perceive that the idea used does work, as we have firmware that can successfully boot and work as intended. However, there are still lots of errors present on the boot process of most of the images. Most of the errors are related to missing entries on the NVRAM or missing files. Adding more entries and recompiling the {\tt libnvram} may help with the missing entries; enhancing the extraction process we may find that the firmware contains more than one partition, and thus, we could seek the missing files. Moreover, one difficult task is on how to evaluate in scale if the booting process was successfully or not. For an individual firmware image, a human can easily tell when the firmware was able to boot without problems. But finding a way to check this at scale is still something to debate. Firmadyne uses a mere {\tt ping} to check if the firmware is available on the local network. If the firmware answers the network packet then it considers that the firmware had it's boot successful. Although this already brings some automation to the table, it is still not the ideal solution.
+The results obtained when executing the final re-hosting steps with Firmadyne are very diverse. We can perceive that the idea used does work, as we have firmware that can successfully boot and work as intended. However, there are still lots of errors present in the boot process of most of the images. Most of the errors are related to missing entries on the NVRAM or missing files. Adding more entries and recompiling the {\tt libnvram} may help with the missing entries; enhancing the extraction process we may find that the firmware contains more than one partition, and thus, we could seek the missing files. Moreover, one difficult task is on how to evaluate in scale if the booting process was successful or not. For an individual firmware image, a human can easily tell when the firmware was able to boot without problems. But finding a way to check this at scale is still something to debate. Firmadyne uses a mere {\tt ping} to check if the firmware is available on the local network. If the firmware answers the network packet then it considers that the firmware had its boot successful. Although this already brings some automation to the table and does indeed mean that the boot process has been successful, it is still not the ideal solution as it does not mean that the firmware is behaving as expected.
 
 
 \subsection{Re-hosting via Jetset}
 \label{sec:result-jetset}
 
-Jetset~\cite{jetset} uses a symbolic execution engine with a custom developed algorithm to try to boot a firmware from a device with peripherals dependencies, as already discussed in Chapter \ref{chap:related}. We believe this novel approach is very clever, and we want to investigate further to discover if it could fit our project. However, to the scope and time range of this paper, we only read it's source code to understand the tool principles and tested Jetset with it's default proof-of-concept firmware images that were used to produce it's article (and so we had at hand all the necessary inputs to start the firmware symbolic inference).
+Jetset~\cite{jetset} uses a symbolic execution engine with a custom-developed algorithm to try to boot a firmware from a device with peripherals dependencies, as already discussed in Chapter \ref{chap:related}. We believe this novel approach is very clever, and we want to investigate further to discover if it could fit our project. However, to the scope and time range of this paper, we only read its source code to understand the tool principles and tested Jetset with its default proof-of-concept firmware images that were used to produce its article (and so we had at hand all the necessary inputs to start the firmware symbolic inference).
 
 In future works (see Section \ref{sec:future-work}) we intend to deeper understand the tool (we are going to need to gain more knowledge about symbolic execution as well) and try to integrate it into our SCREEN project if we can prove it is going to be of help in the task of re-hosting wireless router firmware devices.

@@ -447,7 +447,10 @@
    \end{spacing}
 
    \@makecippage        % funcao para criar verso da folha de rosto
-   \@listexaminators    % funcao para criar pagina de membros da banca
+   %\@listexaminators    % funcao para criar pagina de membros da banca
+   	\pdfbookmark[0]{\namepageexaminersbookmark}{aprovacao}
+   	\thispagestyle{empty}
+	\includepdf[pages=-]{folha_aprovacao.pdf}
  }
 
 %==============================================================================

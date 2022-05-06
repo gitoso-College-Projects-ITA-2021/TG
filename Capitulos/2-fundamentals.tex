@@ -1,4 +1,4 @@
-In this section, we will describe the core concepts of a Linux system's basic booting process, the basics of security vulnerability discovery and analysis in software, challenges when working with firmware analysis and the basics of re-hosting.  with the main tools that are commonly used in these processes. Later, we will finally present the most common tools used in the process of performing security analysis when working with firmware.
+In this section, we will describe the core concepts of a Linux system's basic booting process, the basics of security vulnerability discovery and analysis in software, challenges when working with firmware analysis and the basics of re-hosting with the main tools that are commonly used in these processes. Later, we will finally present the most common tools used in the process of performing security analysis when working with firmware.
 
 \section{Firmware}
 
@@ -10,7 +10,7 @@ For our research, as router firmware (and its updates) images are usually availa
 
 \subsection{Linux Simplified Boot Process}
 
-The system startup process depends on the actual hardware the operating system is being booted on. In a personal computer, usually the booting begins in the Basic Input/Output System (BIOS) at a specific address. After that, BIOS search for Linux drives that can are active and bootable. It then calls the bootloader (a program that resides in the partition of the boot device - usually a hard disk drive [HDD] for personal computers and an SD card for embedded computers). The bootloader is then responsible to load the kernel. For personal computers, the bootload can even provide the user the possibility to select which kernel to boot (allowing dual boot for instance). To boot the kernel, the bootloader loads the kernel image and also loads a file known as {\tt initrd} into memory.
+The system startup process depends on the actual hardware the operating system is being booted on. In a personal computer, usually the booting begins in the Basic Input/Output System (BIOS) at a specific address. After that, BIOS search for Linux drives that can are active and bootable. It then calls the bootloader (a program that resides in the partition of the boot device - usually a hard disk drive [HDD] for personal computers and an SD card for embedded computers). The bootloader is then responsible to load the kernel. For personal computers, the bootload can even provide the user the possibility to select which kernel to boot (allowing dual boot for instance). To boot the kernel, the bootloader loads the kernel image and also loads a file known as {\tt initrd} into memory \cite{ibm-boot}.
 
 Kernel images are commonly a compressed binary file (usually {\tt zImage} or {\tt bzImage} formats) that were compressed using the common {\tt zlib} software library. When loading the kernel, the bootloader decompresses the kernel image and loads it into memory.
 
